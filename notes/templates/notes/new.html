@@ -1,0 +1,6 @@
+<form action= "{% url 'create' %}" method="post">{% csrf_token %}
+    <input name ="note_title" type="text"  id = "note_title" >
+    <br>
+    <input name= "note_text" id = "note_text" type="text"  >
+    <input type="submit"  value="submit">
+</form>
