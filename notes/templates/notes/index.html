@@ -15,16 +15,16 @@
     <div class="p-5 mb-4 bg-light rounded-3">
         <div class="container-fluid py-5">
           <h1 class="display-5 fw-bold">Notes app</h1>
-          {% if current_user %}
-          user : {{current_user}} <a href="{% url 'logout' %}">logout</a>
+          
+          {% if current_user.username != "" %}
+          user : {{current_user.username}} <a href="{% url 'logout_view' %}">logout</a>
           <br>
           <a href="new">new!</a><br>
-
           {%else%}
     <a href="signup_new">create an account</a>
-    <form id="loginForm"action="{% url 'login' %}" method = "post">{% csrf_token %}
+    <form id="loginForm"action="{% url 'login_view' %}" method = "post">{% csrf_token %}
         id : <input type="text" name = "user_id">
-        pwd : <input type="text" name="user_pwd">
+        pwd : <input type="password" name="user_pwd">
         <button class="btn btn-primary btn-lg" type="submit">login!</button>
     {% endif %}
 

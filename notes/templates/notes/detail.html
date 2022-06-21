@@ -5,27 +5,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>detail</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
-<script>
-function edit(){
-    
-    window.location="{% url 'edit' notes.id%}"
-}
-function del(){
-    "{% url 'delete' notes.id%}"
-}
-</script>
+    {% include './script.html' %}
+
 </head>
 <body>
     <div class="h-100 p-5 text-white bg-dark rounded-3">
-        {% if notes.user.user_id == current_user.user_id %}
-        <button class="btn btn-outline-light" type="button" onclick = "edit()">Edit</button>
-        <button class="btn btn-outline-light" type="button" onclick= "del()" >Delete</button>
+        {% if notes.user.username == current_user.username %}
+
+        <button class="btn btn-outline-light" type="button" id = "edit">Edit</button>
+        <button class="btn btn-outline-light" type="button" id="delete" >Delete</button>
+
         {% endif %}
 
         <h2>title : {{notes.title}}</h2>
-        user : {{notes.user.user_id}}
+        user : {{notes.user.username}}
         <p><br>text : {{notes.text}}
         </p>
        <a href="{% url 'index' %}">back to home</a>

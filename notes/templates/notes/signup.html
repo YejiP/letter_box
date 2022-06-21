@@ -1,6 +1,6 @@
 <form action= "{% url 'signup' %}" method="post">{% csrf_token %}
     <input name ="user_id" type="text"  id = "user_id" >
     <br>
-    <input name= "user_pwd" id = "user_pwd" type="text"  >
+    <input name= "user_pwd" id = "user_pwd" type="password"  >
     <input type="submit"  value="submit">
 </form>
