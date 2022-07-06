@@ -13,7 +13,7 @@ urlpatterns = [
     path('new/', views.new, name='new'),
     path('create/', views.create, name='create'),
 
-    path('bulk_create/', views.bulk_create, name='bulk_create'),
+    #path('bulk_create/', views.bulk_create, name='bulk_create'),
 
     path('<int:note_id>/delete/', views.delete, name='delete'),
     path('signup/', views.signup, name='signup'),

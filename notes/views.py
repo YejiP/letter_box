@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
+from requests import session
 from .models import Notes
 from .models import User
 from django.http import Http404, HttpResponse
@@ -9,7 +10,7 @@ from django.contrib.auth import get_user, logout
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 import json
-
+import pika
 """
 index : display notes by time
 detail : retreive the note object, then edit
@@ -21,6 +22,7 @@ https://docs.djangoproject.com/en/4.0/topics/db/queries/
 
 
 current_user=None
+
 def signup_new(request):
     return render(request,'notes/signup.html')
 
@@ -35,7 +37,6 @@ def login_view(request):
 
     user = authenticate(request, username=username, password=password)
     if user is not None:
-        global current_user
         login(request, user)
         return redirect('index')
     else:
@@ -51,9 +52,9 @@ def logout_view(request):
 
 #get
 def index(request):
-    notesList = Notes.objects.order_by('title')
-    context = {'latest_Note_list': notesList, 'current_user' : get_user(request)}
-    return render(request, 'notes/index.html', context)
+    notesList = Notes.objects.order_by('created_at')
+    context = {'latest_Note_list': notesList, 'current_user' :get_user(request)}
+    return render(request, 'notes/index.html',context)
 
 #get
 def detail(request, note_id):
@@ -100,16 +101,55 @@ def delete(request, note_id):
 #post endpoint, and create HttpResponse notes, limit is the number of notes.
 #I cannot call request.post/get together in the same endpoint.
 ##10000명이 동시에 note create -> 빨리만드려고??????1초안ㅇㅔ
-@csrf_exempt
-def bulk_create(request):
-    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-    data = json.loads(request.body.decode('utf-8'))
-    print(data)
 
-    limit=data['limit']
-    user= User.objects.all().get(id=3)
-    for i in range(limit):
-        print(i)
-    Notes.objects.create(user = get_user(request), title = data['title'], text =data['text']) 
-    #Notes.objects.bulk_create()
-    return HttpResponse(content= 200)
+"""
+Rubber duck
+what am i doing?
+: I am going to use Rabbitmq to implement bulk_create
+
+why do i use rabbitmq?
+: because we assumed that the memory is limited in this app, so not to face memory issue
+and then wanted to work asynchronously???
+
+how do i use it...
+: Instad of using array in code, use sender, receiver to process ....?
+
+"""
+
+
+# @csrf_exempt
+# def bulk_create(request):
+#     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+#     data = json.loads(request.body.decode('utf-8'))
+
+#     limit=data['limit']
+
+#     #bulk way
+#     user = User.objects.all().get(pk=3)
+
+#     #Establish a connection
+#     connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+#     channel = connection.channel()
+    
+#     channel.queue_declare(queue='notes')
+#     #sender should be in here, where notes are created.
+#     for i in range(1):
+#         message ={'user' : user.username,  'title' : data['title'] , 'text' : data['text']}
+#         channel.basic_publish(exchange='',
+#                       routing_key='notes',
+#                       body= json.dumps(message))
+    
+#     #receiver should be around here??? in the same function?? then #132 as soon as note is created, it will process 
+#     #even though notes are still generated.
+
+#     def callback(ch, method, properties, body):
+#         mesage=json.loads(body)
+#         Notes.objects.create(user =mesage['user'], title = mesage['title'], text =mesage['text']) 
+
+#     channel.basic_consume(queue='notes',
+#                       auto_ack=True,
+#                       on_message_callback=callback)
+    
+#     channel.start_consuming()
+
+#     return HttpResponse(content= 200)
