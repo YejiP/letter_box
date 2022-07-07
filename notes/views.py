@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
 from requests import session
+
+from notes.subscriber import Subscriber
 from .models import Notes
 from .models import User
 from django.http import Http404, HttpResponse
@@ -11,6 +13,8 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 import json
 import pika
+from .serializer import CurrentUserSerializer
+from .subscriber import Subscriber
 """
 index : display notes by time
 detail : retreive the note object, then edit
@@ -115,41 +119,36 @@ how do i use it...
 : Instad of using array in code, use sender, receiver to process ....?
 
 """
+@csrf_exempt
+def bulk_create(request):
+    data = json.loads(request.body.decode('utf-8'))
 
+    limit=data['limit']
 
-# @csrf_exempt
-# def bulk_create(request):
-#     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-#     data = json.loads(request.body.decode('utf-8'))
+    #bulk way
+    user = User.objects.all().get(pk=3)
 
-#     limit=data['limit']
-
-#     #bulk way
-#     user = User.objects.all().get(pk=3)
-
-#     #Establish a connection
-#     connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-#     channel = connection.channel()
+    #Establish a connection
+    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    channel = connection.channel()
     
-#     channel.queue_declare(queue='notes')
-#     #sender should be in here, where notes are created.
-#     for i in range(1):
-#         message ={'user' : user.username,  'title' : data['title'] , 'text' : data['text']}
-#         channel.basic_publish(exchange='',
-#                       routing_key='notes',
-#                       body= json.dumps(message))
+    channel.queue_declare(queue='notes')
+    #sender should be in here, where notes are created.
+    user =User.objects.all().get(id=3)
+    userJson = CurrentUserSerializer(user)
+    sub = Subscriber()
     
-#     #receiver should be around here??? in the same function?? then #132 as soon as note is created, it will process 
-#     #even though notes are still generated.
+    for i in range(1):
+        message ={'user' : userJson.data,  'title' : data['title'] , 'text' : data['text']}
+        
+        channel.basic_publish(exchange='',
+                      routing_key='notes',
+                      body= json.dumps(message))
 
-#     def callback(ch, method, properties, body):
-#         mesage=json.loads(body)
-#         Notes.objects.create(user =mesage['user'], title = mesage['title'], text =mesage['text']) 
+    sub.subscribe()
 
-#     channel.basic_consume(queue='notes',
-#                       auto_ack=True,
-#                       on_message_callback=callback)
-    
-#     channel.start_consuming()
+    channel.close()
+    connection.close()
 
-#     return HttpResponse(content= 200)
+
+    return HttpResponse(content= 200)
