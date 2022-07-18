@@ -1,5 +1,7 @@
 from django.urls import path
 
+from notes import tasks
+
 from . import views
 
 urlpatterns = [
@@ -12,6 +14,8 @@ urlpatterns = [
 
     path('new/', views.new, name='new'),
     path('create/', views.create, name='create'),
+
+    path('bulk_new/', views.bulk_new, name='bulk_new'),
 
     path('bulk_create/', views.bulk_create, name='bulk_create'),
 

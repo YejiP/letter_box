@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
 from requests import session
-
+from .tasks import async_note_create
 from notes.subscriber import Subscriber
 from .models import Notes
 from .models import User
@@ -13,7 +13,6 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 import json
 import pika
-from .serializer import CurrentUserSerializer
 from .subscriber import Subscriber
 """
 index : display notes by time
@@ -23,7 +22,6 @@ To get from a URL to a view, Django uses what are known as ‘URLconfs’. A URL
 
 https://docs.djangoproject.com/en/4.0/topics/db/queries/
 """
-
 
 current_user=None
 
@@ -99,12 +97,22 @@ def delete(request, note_id):
         raise Http404("Note does not exist")
     notesList = Notes.objects.order_by('title')
     return redirect('index')
-    
-
 
 #post endpoint, and create HttpResponse notes, limit is the number of notes.
 #I cannot call request.post/get together in the same endpoint.
-##10000명이 동시에 note create -> 빨리만드려고??????1초안ㅇㅔ
+##10000명이 동시에 note create -> 빨리만드려고??????1초안에
+def bulk_new(request):
+    return render(request, 'notes/new_bulk_create.html')
+
+
+@csrf_exempt
+def bulk_create(request):
+    # data = json.loads(request.body.decode('utf-8')) this one is when working with postman
+    data=request.POST
+    for _ in range(int(data['limit'])):
+        async_note_create.delay(data)
+    return HttpResponse('200')
+
 
 """
 Rubber duck
@@ -117,38 +125,4 @@ and then wanted to work asynchronously???
 
 how do i use it...
 : Instad of using array in code, use sender, receiver to process ....?
-
 """
-@csrf_exempt
-def bulk_create(request):
-    data = json.loads(request.body.decode('utf-8'))
-
-    limit=data['limit']
-
-    #bulk way
-    user = User.objects.all().get(pk=3)
-
-    #Establish a connection
-    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-    channel = connection.channel()
-    
-    channel.queue_declare(queue='notes')
-    #sender should be in here, where notes are created.
-    user =User.objects.all().get(id=3)
-    userJson = CurrentUserSerializer(user)
-    sub = Subscriber()
-    
-    for i in range(1):
-        message ={'user' : userJson.data,  'title' : data['title'] , 'text' : data['text']}
-        
-        channel.basic_publish(exchange='',
-                      routing_key='notes',
-                      body= json.dumps(message))
-
-    sub.subscribe()
-
-    channel.close()
-    connection.close()
-
-
-    return HttpResponse(content= 200)
