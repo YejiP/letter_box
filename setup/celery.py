@@ -16,15 +16,18 @@ app = Celery('setup')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
 app.conf.task_default_queue = 'default'
+
 app.conf.task_queues = (
     Queue('notesq', routing_key='notes.create'),
 )
+
 task_routes = {
     'notes.tasks.async_note_create': {
         'queue': 'notesq',
         'routing_key': 'notes.create',
     },
 }
+
 
 # Load task modules from all registered Django apps.
 app.autodiscover_tasks()

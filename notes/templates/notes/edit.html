@@ -1,6 +1,32 @@
-<form action="{% url 'update' notes.id %}" method="post">{% csrf_token %}
-    <input type="text" name = "title" value={{notes.title}}>
-    <br>
-    <input type="text" name="text" value={{notes.text}}>
-    <input type="submit" value="submit">
-</form>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit your note</title>
+    <style>
+      input {
+        opacity: 0.7;
+      }
+    </style>
+    {% include './script.html' %}
+  </head>
+  <body>
+    <span id="color" hidden>#{{color}}</span>
+    <script>
+      document.body.style.backgroundColor =
+        document.getElementById("color").textContent;
+    </script>
+    <br />
+    <form action="{% url 'update' notes.id %}" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="color" value="{{color}}" />
+
+      <input type="text" name="title" value="{{notes.title}}" />
+      <br />
+      <input type="text" name="text" value="{{notes.text}}" /><br />
+      <input type="submit" class="btn btn-outline-light" value="submit" />
+    </form>
+  </body>
+</html>

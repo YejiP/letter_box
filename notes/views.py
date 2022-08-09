@@ -1,8 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
-from requests import session
 from .tasks import async_note_create
-from notes.subscriber import Subscriber
 from .models import Notes
 from .models import User
 from django.http import Http404, HttpResponse
@@ -12,8 +10,11 @@ from django.contrib.auth import get_user, logout
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 import json
-import pika
-from .subscriber import Subscriber
+from .emit_event import Emit_event
+from datetime import datetime, timezone
+from django.core.paginator import Paginator
+
+
 """
 index : display notes by time
 detail : retreive the note object, then edit
@@ -58,8 +59,14 @@ def logout_view(request):
 # get
 def index(request):
     notesList = Notes.objects.order_by('created_at')
-    context = {'latest_Note_list': notesList,
-               'current_user': get_user(request)}
+
+    p = Paginator(notesList, 3)
+    page_number = request.GET.get('page')
+
+    page_obj = p.get_page(page_number)
+    context = {
+        # 'latest_Note_list': notesList,
+        'current_user': get_user(request), 'page_obj': page_obj}
     return render(request, 'notes/index.html', context)
 
 # get
@@ -68,9 +75,11 @@ def index(request):
 def detail(request, note_id):
     try:
         note = Notes.objects.get(pk=note_id)
+        color = request.GET.get('color')
+
     except Notes.DoesNotExist:
         raise Http404("Note does not exist")
-    return render(request, 'notes/detail.html', {'notes': note, 'current_user': get_user(request)})
+    return render(request, 'notes/detail.html', {'notes': note, 'color': color, 'current_user': get_user(request)})
 
 # get
 
@@ -83,8 +92,13 @@ def new(request):
 
 def create(request):
     # 나중에 삭제 user! user= User.objects.all().get(id=3)
+
     note = Notes.objects.create(user=get_user(request), title=request.POST.get(
         'note_title'), text=request.POST.get('note_text'))
+    timestamp = datetime.now(timezone.utc)
+    data = {'type': 'note_create', 'user_id': '1', 'note_title': f'{note.title}',
+            'note_text': f'{note.text}', 'timestamp': f'{timestamp}'}
+    Emit_event.publish(str(data))
     return render(request, 'notes/detail.html', {'notes': note})
 
 # form
@@ -92,24 +106,41 @@ def create(request):
 
 def edit(request, note_id):
     note = Notes.objects.get(pk=note_id)
-    return render(request, 'notes/edit.html', {'notes': note})
+    color = request.GET.get('color')
+    return render(request, 'notes/edit.html', {'notes': note, 'color': color})
 
-#put or patch
+# put or patch
 
 
 def update(request, note_id):
     note = Notes.objects.get(pk=note_id)
+    # publish data to exchange
+    # model_type=data['type'], user_id=data['user_id'],  data=data ['timestamp']
+    # later, switch user_id into get_user(request)
+    color = request.POST.get('color')
     note.title = request.POST.get("title")
     note.text = request.POST.get("text")
+    update_time = datetime.now(timezone.utc)
+
+    data = {'type': 'note_update', 'user_id': '1', 'note_title': f'{note.title}',
+            'note_text': f'{note.text}', 'timestamp': f'{update_time}'}
     note.save()
-    return render(request, 'notes/detail.html', {'notes': note})
+    Emit_event.publish(str(data))
+
+    return render(request, 'notes/detail.html', {'notes': note, 'color': color})
 
 # delete
 
 
 def delete(request, note_id):
     try:
+        note = Notes.objects.all().get(pk=note_id)
+        timestamp = datetime.now(timezone.utc)
+        data = {'type': 'note_delete', 'user_id': '1', 'note_title': f'{note.title}',
+                'note_text': f'{note.text}', 'timestamp': f'{timestamp}'}
+        Emit_event.publish(str(data))
         Notes.objects.filter(pk=note_id).delete()
+
     except Notes.DoesNotExist:
         raise Http404("Note does not exist")
     notesList = Notes.objects.order_by('title')
@@ -124,7 +155,7 @@ def bulk_new(request):
     return render(request, 'notes/new_bulk_create.html')
 
 
-@csrf_exempt
+@ csrf_exempt
 def bulk_create(request):
     # data = json.loads(request.body.decode('utf-8')) #this one is when working with postman
     data = request.POST  # this one is with from client request
@@ -134,7 +165,7 @@ def bulk_create(request):
 
 
 """
-form -> load balancer -> server request -> ****run code in server (create sql message to the queue) 
+form -> load balancer -> server request -> ****run code in server (create sql message to the queue)
 -> queue -> worker process message -> create sql records
 
 """

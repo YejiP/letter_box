@@ -1,28 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>detail</title>
     {% include './script.html' %}
+  </head>
 
-</head>
-<body>
-    <div class="h-100 p-5 text-white bg-dark rounded-3">
-        {% if notes.user.username == current_user.username %}
+  <body>
+    <span id="color" hidden>#{{color}}</span>
+    <script>
+      document.body.style.backgroundColor =
+        document.getElementById("color").textContent;
+    </script>
+    <div>
+      <br />
+      <h2>title : {{notes.title}}</h2>
+      user : {{notes.user.username}}
+      <p><br />text : {{notes.text}}</p>
+      {% if notes.user.username == current_user.username %}
+      <button
+        class="btn btn-outline-light"
+        type="button"
+        id="edit"
+        data-color="{{color}}"
+      >
+        Edit
+      </button>
+      <button class="btn btn-outline-light" type="button" id="delete">
+        Delete
+      </button>
 
-        <button class="btn btn-outline-light" type="button" id = "edit">Edit</button>
-        <button class="btn btn-outline-light" type="button" id="delete" >Delete</button>
-
-        {% endif %}
-
-        <h2>title : {{notes.title}}</h2>
-        user : {{notes.user.username}}
-        <p><br>text : {{notes.text}}
-        </p>
-       <a href="{% url 'index' %}">back to home</a>
-      </div>
-</body>
+      {% endif %}
+    </div>
+  </body>
 </html>
-
