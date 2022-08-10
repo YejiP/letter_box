@@ -44,8 +44,10 @@ ul li{
   margin:1em;
 }
 h2 {
+  font-family: 'Reenie Beanie';
+
   font-weight: bold;
-  font-size: 2rem;
+  font-size: 4rem;
 }
 p {
   font-family: 'Reenie Beanie';
@@ -109,7 +111,16 @@ ul li:nth-child(3n) a{
           {% if current_user.username != "" %}
           user : {{current_user.username}} <a href="{% url 'logout_view' %}">logout</a>
           <br>
-          <a href="new">new!</a><br>
+          <a href="#"  onclick="newOpen(this);">new!</a><br>
+          <script language="javascript" type="text/javascript">
+            function newOpen(event) {
+                var w =400;
+                var h= 400;
+                var left = (screen.width - w) / 2;
+                var top = (screen.height - h) / 4;
+                var myNewWindow =  window.open("{% url 'new' %}",'_blank',' width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+            } 
+          </script>
           {%else%}
     <a href="signup_new">create an account</a>
     <form id="loginForm"action="{% url 'login_view' %}" method = "post">{% csrf_token %}
@@ -127,26 +138,25 @@ var j=0
 
 
 {% for note in page_obj %}
-
-    <li onclick="OpenPopupCenter(this);" data-color = "{% cycle 'F8A488' '5AA897' '45526C'%}">
+    <li onclick="OpenPopupCenter(this);" data-color = "{% cycle 'F8A488' '5AA897' '45526C'%}" data-noteid = "{{note.id}}">
       <script language="javascript" type="text/javascript">
         function OpenPopupCenter(event) {
             var w =400;
             var h= 400;
             var left = (screen.width - w) / 2;
             var top = (screen.height - h) / 4;
-            url =   "{% url 'detail' note.id %}?color="+event.getAttribute('data-color')
+            url =   "/notes/"+ event.getAttribute('data-noteid')+ "?color="+event.getAttribute('data-color')
             var myNewWindow =  window.open(url,'_blank',' width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
-
         } 
       </script>
         <a href="#" class="btn btn-primary item"  >
-        <h2>{{ note.title}}</h2>
-        <p>{{ note.text}}<br>{{note.user_id}}</p>
+        <h2>{{note.title}}</h2>
+        <p>{{ note.text}}<br>{{note.user.username}}</p>
         </a>
 
 </li>
 {% endfor %}
+
 </ul>
 <div class="pagination">
     <span class="step-links">

@@ -1,3 +1,4 @@
+import pwd
 from django.shortcuts import render
 from django.shortcuts import redirect
 from .tasks import async_note_create
@@ -13,28 +14,43 @@ import json
 from .emit_event import Emit_event
 from datetime import datetime, timezone
 from django.core.paginator import Paginator
-
-
-"""
-index : display notes by time
-detail : retreive the note object, then edit
-Now in your time on the web you may have come across such beauties as ME2/Sites/dirmod.htm?sid=&type=gen&mod=Core+Pages&gid=A6CD4967199A42D9B65B1B. You will be pleased to know that Django allows us much more elegant URL patterns than that.
-To get from a URL to a view, Django uses what are known as ‘URLconfs’. A URLconf maps URL patterns to views.
-
-https://docs.djangoproject.com/en/4.0/topics/db/queries/
-"""
+from .form import SignUpForm
 
 current_user = None
 
 
 def signup_new(request):
-    return render(request, 'notes/signup.html')
+    regForm = SignUpForm()
+    return render(request, 'notes/signup.html', {'regForm': regForm})
 
 
 def signup(request):
-    User.objects.create_user(
-        username=request.POST['user_id'], password=request.POST['user_pwd'], last_login=timezone.now(), is_superuser=True)
-    return redirect('index')
+    # if request.method == 'POST':
+    regForm = SignUpForm(request.POST)  # form needs content
+    if regForm.is_valid():
+        timestamp = datetime.now(timezone.utc)
+        username = request.POST['username']
+        password = request.POST['password']
+        con_password = request.POST['conPassword']
+        if password != con_password:
+            return render(request, 'notes/signup.html', {'error_message': 'Password does not match', 'regForm': regForm})
+
+        try:
+            user = User.objects.get(username=username)
+            if user is not None:
+                regForm = SignUpForm()
+                return render(request, 'notes/signup.html', {'regForm': regForm, 'error_message': 'username must be unique'})
+        except:
+            user = User.objects.create_user(
+                username=username, password=password, last_login=timestamp)
+            data = {'type': 'user_create',
+                    'user_name': user.username, 'user_id': user.id,
+                    'timestamp': f'{timestamp}'}
+            Emit_event.publish(str(data))
+            login(request, user)
+            return redirect('index')
+
+    return render(request, 'notes/signup.html', {'error_message': 'Data is not valid', 'regForm': regForm})
 
 
 def login_view(request):
@@ -58,14 +74,13 @@ def logout_view(request):
 
 # get
 def index(request):
-    notesList = Notes.objects.order_by('created_at')
+    notesList = Notes.objects.order_by('-created_at')
 
     p = Paginator(notesList, 3)
     page_number = request.GET.get('page')
 
     page_obj = p.get_page(page_number)
     context = {
-        # 'latest_Note_list': notesList,
         'current_user': get_user(request), 'page_obj': page_obj}
     return render(request, 'notes/index.html', context)
 
@@ -96,10 +111,10 @@ def create(request):
     note = Notes.objects.create(user=get_user(request), title=request.POST.get(
         'note_title'), text=request.POST.get('note_text'))
     timestamp = datetime.now(timezone.utc)
-    data = {'type': 'note_create', 'user_id': '1', 'note_title': f'{note.title}',
-            'note_text': f'{note.text}', 'timestamp': f'{timestamp}'}
+    data = {'type': 'note_create', 'note_id': f'{note.id}', 'note_title': f'{note.title}',
+            'note_text': f'{note.text}', 'user_id': '1', 'timestamp': f'{timestamp}'}
     Emit_event.publish(str(data))
-    return render(request, 'notes/detail.html', {'notes': note})
+    return HttpResponse('<script type="text/javascript">window.close(); window.opener.parent.location.reload();</script>')
 
 # form
 
@@ -118,16 +133,17 @@ def update(request, note_id):
     # model_type=data['type'], user_id=data['user_id'],  data=data ['timestamp']
     # later, switch user_id into get_user(request)
     color = request.POST.get('color')
-    note.title = request.POST.get("title")
-    note.text = request.POST.get("text")
+    note.title = request.POST.get("note_title")
+    note.text = request.POST.get("note_text")
     update_time = datetime.now(timezone.utc)
 
-    data = {'type': 'note_update', 'user_id': '1', 'note_title': f'{note.title}',
-            'note_text': f'{note.text}', 'timestamp': f'{update_time}'}
+    data = {'type': 'note_update', 'note_id': f'{note.id}', 'note_title': f'{note.title}',
+            'note_text': f'{note.text}', 'user_id': '1', 'timestamp': f'{update_time}'}
     note.save()
     Emit_event.publish(str(data))
+    return HttpResponse('<script type="text/javascript">window.close(); window.opener.parent.location.reload();</script>')
 
-    return render(request, 'notes/detail.html', {'notes': note, 'color': color})
+    # return render(request, 'notes/detail.html', {'notes': note, 'color': color})
 
 # delete
 
@@ -136,16 +152,15 @@ def delete(request, note_id):
     try:
         note = Notes.objects.all().get(pk=note_id)
         timestamp = datetime.now(timezone.utc)
-        data = {'type': 'note_delete', 'user_id': '1', 'note_title': f'{note.title}',
-                'note_text': f'{note.text}', 'timestamp': f'{timestamp}'}
+        data = {'type': 'note_delete', 'note_id': f'{note.id}', 'note_title': f'{note.title}',
+                'note_text': f'{note.text}', 'user_id': '1', 'timestamp': f'{timestamp}'}
         Emit_event.publish(str(data))
         Notes.objects.filter(pk=note_id).delete()
 
     except Notes.DoesNotExist:
         raise Http404("Note does not exist")
     notesList = Notes.objects.order_by('title')
-    return redirect('index')
-
+    return HttpResponse('<script type="text/javascript">window.close(); window.opener.parent.location.reload();</script>')
 # post endpoint, and create HttpResponse notes, limit is the number of notes.
 # I cannot call request.post/get together in the same endpoint.
 # 10000명이 동시에 note create -> 빨리만드려고??????1초안에
