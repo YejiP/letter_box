@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Friend</title>
+  </head>
+  <body>
+    <form action="{% url 'add_friend' %}" method="post">
+      {% csrf_token %}
+      <input name="friend_username" type="text" />
+      <button type="submit">find</button>
+    </form>
+
+    {% if friend_username %}
+    <span id= "friend_username"> {{friend_username}} <span/>
+        {% if already_friend %}
+        <button disabled>Alredy friend</button>
+        {% elif received %}
+        <button  class = 'accept_friend' data-with="{{friend_username}}"">Be friend</button>
+        {% elif pending %}
+        <button disabled>already sent</button>
+
+        {% else %}
+    <button id="send_friend_request" type="submit" data-towhom="{{friend_username}}">send friend request</button>
+    {% endif %}
+{% elif not friend_username %}
+no user under this id
+{% endif %}
+
+    <p><h1>new requests </h1>
+        {% for f in my_request %}
+         <button class = 'accept_friend' data-with= "{{f.from_user.username}}">{{f.from_user.username}}</button>
+        {% endfor %}
+    </p>
+
+    <p><h1>pending_request </h1>
+    {% for pr in pending_request %}
+    <button>{{pr.to_user.username}}</button> <br>
+    {% endfor %}
+</p>
+
+
+<p><h1>friends </h1>
+    {% for f in friends %}
+     <button id = 'send_message' data-myfriend = "{{f.my_friend.username}}">{{f.my_friend.username}}</button>
+    {% endfor %}
+</p>
+    <script>
+        var fr = document.getElementById('send_friend_request')
+        if (fr !=null){
+            fr.addEventListener('click', function(event){
+                window.location.href = "{% url 'send_friend_request'%}?friend_username="+this.getAttribute("data-towhom");
+            })
+
+        }
+
+        var af = document.getElementsByClassName('accept_friend')
+        if (af!=null){
+            for(var i =0;i<af.length;i++){
+                af[i].addEventListener('click',accept_friend)
+            }
+        }
+
+        var sm = document.getElementById('send_message')
+        if (sm !=null){
+            sm.addEventListener('click', send)
+        }
+        function accept_friend(event){
+            window.location.href= "{% url 'accept_friend' %}?with="+this.getAttribute('data-with')
+        }
+        function send(event){
+                var w =400;
+                var h= 400;
+                var left = (screen.width - w) / 2;
+                var top = (screen.height - h) / 4;
+                var myNewWindow =  window.open("{% url 'new' %}?receiver="+this.getAttribute('data-myfriend'),'_blank',' width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+
+            }
+
+        
+    </script>
+  </body>
+</html>

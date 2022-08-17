@@ -26,6 +26,11 @@ urlpatterns = [
     path('login_view/', views.login_view, name='login_view'),
     path('logout_view/', views.logout_view, name='logout_view'),
 
+    path('add_friend/', views.add_friend, name='add_friend'),
+    path('send_friend_reqeust/', views.send_friend_request,
+         name='send_friend_request'),
+    path('accept_friend/', views.accept_friend, name='accept_friend')
+
     # ex: /notes/1/
     # 이렇게하면 리소스로 헷갈릴수있어서 절대일케하면안된다.
     # notes/bulk_create/3/ => notes/bulk_create?limit=3

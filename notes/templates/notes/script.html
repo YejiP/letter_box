@@ -17,7 +17,15 @@
 </style>
 <script>
   window.onload = (event) => {
-    document.getElementById("edit").addEventListener("click", edit);
+    var e = document.getElementById("edit");
+    if (e != null) {
+      e.addEventListener("click", edit);
+    }
+    var r = document.getElementById("reply");
+    if (r != null) {
+      r.addEventListener("click", reply);
+    }
+
     document.getElementById("delete").addEventListener("click", del);
   };
 
@@ -27,5 +35,22 @@
   }
   function del() {
     window.location.href = "{% url 'delete' notes.id%}";
+  }
+  function reply() {
+    var w = 400;
+    var h = 400;
+    var left = (screen.width - w) / 4;
+    var top = (screen.height - h) / 4;
+    url = "{% url 'new' %}";
+    receiver = event.target.getAttribute("data-sender");
+    var mywindow = window.open(
+      url,
+      "_blank",
+      " width=" + w + ", height=" + h + ", top=" + top + ", left=" + left
+    );
+    mywindow.addEventListener("load", set_receiver);
+    function set_receiver() {
+      mywindow.document.getElementById("receiver").value = receiver;
+    }
   }
 </script>

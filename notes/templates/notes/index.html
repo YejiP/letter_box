@@ -111,14 +111,15 @@ ul li:nth-child(3n) a{
           {% if current_user.username != "" %}
           user : {{current_user.username}} <a href="{% url 'logout_view' %}">logout</a>
           <br>
-          <a href="#"  onclick="newOpen(this);">new!</a><br>
+          <a href="#" onclick="friendNew(this);">Add friend</a>
+
           <script language="javascript" type="text/javascript">
-            function newOpen(event) {
+            function friendNew(event) {
                 var w =400;
                 var h= 400;
                 var left = (screen.width - w) / 2;
                 var top = (screen.height - h) / 4;
-                var myNewWindow =  window.open("{% url 'new' %}",'_blank',' width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+                var myNewWindow =  window.open("{% url 'add_friend' %}",'_blank',' width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
             } 
           </script>
           {%else%}
@@ -127,16 +128,16 @@ ul li:nth-child(3n) a{
         id : <input type="text" name = "user_id">
         pwd : <input type="password" name="user_pwd">
         <button class="btn btn-primary btn-lg" type="submit">login!</button>
+      </form>
+
     {% endif %}
 
-</form>
+
+
+{% if current_user.username != "" %}
+
 <p class="col-md-8 fs-4">
 <ul>
-<!-- <script>
-var j=0
-</script> -->
-
-
 {% for note in page_obj %}
     <li onclick="OpenPopupCenter(this);" data-color = "{% cycle 'F8A488' '5AA897' '45526C'%}" data-noteid = "{{note.id}}">
       <script language="javascript" type="text/javascript">
@@ -151,7 +152,7 @@ var j=0
       </script>
         <a href="#" class="btn btn-primary item"  >
         <h2>{{note.title}}</h2>
-        <p>{{ note.text}}<br>{{note.user.username}}</p>
+        <p>{{ note.text}}<br>{{note.sender.username}}</p>
         </a>
 
 </li>
@@ -182,5 +183,6 @@ var j=0
 
 <br>
     </p>
+    {% endif %}
 </body>
 </html>

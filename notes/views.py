@@ -3,6 +3,9 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from .tasks import async_note_create
 from .models import Notes
+from .models import Friend_request
+from .models import Friendship
+
 from .models import User
 from django.http import Http404, HttpResponse
 from django.contrib.auth.models import User
@@ -74,14 +77,19 @@ def logout_view(request):
 
 # get
 def index(request):
-    notesList = Notes.objects.order_by('-created_at')
+    if get_user(request).username:
+        notesList = Notes.objects.filter(
+            receiver=get_user(request)).order_by('-created_at')
 
-    p = Paginator(notesList, 3)
-    page_number = request.GET.get('page')
+        p = Paginator(notesList, 3)
+        page_number = request.GET.get('page')
 
-    page_obj = p.get_page(page_number)
-    context = {
-        'current_user': get_user(request), 'page_obj': page_obj}
+        page_obj = p.get_page(page_number)
+        context = {
+            'current_user': get_user(request), 'page_obj': page_obj}
+    else:
+        context = {
+            'current_user': get_user(request), 'page_obj': None}
     return render(request, 'notes/index.html', context)
 
 # get
@@ -100,15 +108,16 @@ def detail(request, note_id):
 
 
 def new(request):
-    return render(request, 'notes/new.html')
+    data = {'receiver': None}
+    if request.GET['receiver']:
+        data['receiver'] = request.GET['receiver']
+    return render(request, 'notes/new.html', data)
 
 # post
 
 
 def create(request):
-    # 나중에 삭제 user! user= User.objects.all().get(id=3)
-
-    note = Notes.objects.create(user=get_user(request), title=request.POST.get(
+    note = Notes.objects.create(sender=get_user(request), receiver=User.objects.get(username=request.POST.get('receiver')), title=request.POST.get(
         'note_title'), text=request.POST.get('note_text'))
     timestamp = datetime.now(timezone.utc)
     data = {'type': 'note_create', 'note_id': f'{note.id}', 'note_title': f'{note.title}',
@@ -179,20 +188,54 @@ def bulk_create(request):
     return HttpResponse('200')
 
 
-"""
-form -> load balancer -> server request -> ****run code in server (create sql message to the queue)
--> queue -> worker process message -> create sql records
+def accept_friend(request):
+    with_whom = User.objects.get(username=request.GET['with'])
+    Friend_request.objects.filter(
+        from_user=with_whom).filter(to_user=get_user(request)).delete()
+    Friendship.objects.create(me=with_whom, my_friend=get_user(request))
+    if not Friendship.objects.filter(me=get_user(request)).filter(my_friend=with_whom):
+        Friendship.objects.create(me=get_user(request), my_friend=with_whom)
+    return redirect('add_friend')
 
-"""
-"""
-Rubber duck
-what am i doing?
-: I am going to use Rabbitmq to implement bulk_create
 
-why do i use rabbitmq?
-: because we assumed that the memory is limited in this app, so not to face memory issue
-and then wanted to work asynchronously???
+def add_friend(request):
+    # construct data dictionary
+    data = {'pending_request': [], 'my_request': [],
+            'friends': [], 'friend_username': None, 'already_friend': False, 'received': False, 'pending': False}
+    data['pending_request'] = Friend_request.objects.filter(
+        from_user=get_user(request))
+    data['my_request'] = Friend_request.objects.filter(
+        to_user=get_user(request))
+    data['friends'] = Friendship.objects.filter(me=get_user(request))
 
-how do i use it...
-: Instad of using array in code, use sender, receiver to process ....?
-"""
+    # process request according to request method
+    if request.method == 'GET':
+        return render(request, 'notes/add_friend.html', data)
+
+    elif request.method == 'POST':
+        try:
+            friend = User.objects.get(username=request.POST['friend_username'])
+            if friend:
+                data['friend_username'] = friend.username
+                # see if i already add this person to my friend
+                if Friendship.objects.filter(my_friend__username=request.POST['friend_username']).filter(me=get_user(request)):
+                    data['already_friend'] = True
+                elif Friend_request.objects.filter(to_user=get_user(request)).filter(from_user__username=request.POST['friend_username']):
+                    data['received'] = True
+                elif Friend_request.objects.filter(from_user=get_user(request)).filter(to_user__username=request.POST['friend_username']):
+                    data['pending'] = True
+        except:
+            pass
+
+        return render(request, 'notes/add_friend.html', data)
+
+
+def send_friend_request(request):
+    if request.method == 'GET':
+        to_user = User.objects.get(username=request.GET['friend_username'])
+        if not Friend_request.objects.filter(from_user=get_user(request)).filter(to_user=to_user):
+            Friend_request.objects.create(
+                from_user=get_user(request), to_user=to_user)
+            return redirect('add_friend')
+        else:
+            return HttpResponse('<script type="text/javascript">alert("already added");window.location.href="/notes/add_friend/"</script>')
