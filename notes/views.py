@@ -60,14 +60,16 @@ def login_view(request):
     # signup 에서 create_user 아니라 create 써서 error나는 거였다.
     username = request.POST['user_id']
     password = request.POST['user_pwd']
-
-    user = authenticate(request, username=username, password=password)
-    if user is not None:
-        login(request, user)
-        return redirect('index')
-    else:
-        # Return an 'invalid login' error message.
-        raise Http404("invalid login")
+    try:
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('index')
+    except:
+        pass
+    context = {
+        'current_user': get_user(request), 'page_obj': None, 'friends': None, 'outbox': False, 'loginFailed': True}
+    return render(request, 'notes/index.html', context)
 
 
 def logout_view(request):
@@ -78,12 +80,15 @@ def logout_view(request):
 # get
 def index(request):
     if get_user(request).username:
+        outbox = False
 
         try:
             if request.GET['mailbox'] == 'outbox':
+                outbox = True
                 notesList = Notes.objects.filter(
                     sender=get_user(request)).order_by('-created_at')
         except:
+            outbox = False
             notesList = Notes.objects.filter(
                 receiver=get_user(request)).order_by('-created_at')
 
@@ -93,10 +98,10 @@ def index(request):
 
         page_obj = p.get_page(page_number)
         context = {
-            'current_user': get_user(request), 'page_obj': page_obj, 'friends': friends}
+            'current_user': get_user(request), 'page_obj': page_obj, 'friends': friends, 'outbox': outbox, 'loginFailed': False}
     else:
         context = {
-            'current_user': get_user(request), 'page_obj': None, 'friends': None}
+            'current_user': get_user(request), 'page_obj': None, 'friends': None, 'outbox': False, 'loginFailed': False}
     return render(request, 'notes/index.html', context)
 
 # get
@@ -106,6 +111,9 @@ def detail(request, note_id):
     try:
         note = Notes.objects.get(pk=note_id)
         color = request.GET.get('color')
+        if request.GET.get('outbox') == "False":
+            note.read = True
+            note.save()
 
     except Notes.DoesNotExist:
         raise Http404("Note does not exist")

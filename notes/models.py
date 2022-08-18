@@ -1,3 +1,4 @@
+from asyncore import read
 from tkinter import CASCADE
 from django.db import models
 from django.contrib.auth.models import User
@@ -7,7 +8,6 @@ from psycopg2 import Timestamp
 class App_user(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     last_active_time = models.DateTimeField()
-    friends = models
 
     def __str__(self):
         return self.last_active_time
@@ -20,6 +20,7 @@ class Notes(models.Model):
         User, on_delete=models.CASCADE, related_name='sender')
     title = models.CharField(max_length=30)
     text = models.CharField(max_length=500)
+    read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

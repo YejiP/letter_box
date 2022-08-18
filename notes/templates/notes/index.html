@@ -42,9 +42,8 @@ ul li{
 }
 h2 {
   font-family: 'Reenie Beanie';
-
   font-weight: bold;
-  font-size: 3rem;
+  font-size: 2.3rem;
 }
 p {
   font-family: 'Reenie Beanie';
@@ -112,6 +111,10 @@ ul li:nth-child(3n) a{
   white-space: normal;
 
 }
+.add_button{
+  background:#ffdfba
+
+}
 
 .friend_item:hover{
   box-shadow:10px 10px 7px rgba(0,0,0,.4);
@@ -150,6 +153,9 @@ div.scrollmenu li {
         id : <input type="text" name = "user_id">
         pwd : <input type="password" name="user_pwd">
         <button class="btn btn-primary btn-lg" type="submit">login!</button>
+        {% if loginFailed %}
+<br>        <span id = "login_message" style="color:red">Invalid login</span>
+        {% endif %}
       </form>
 
     {% endif %}
@@ -161,16 +167,34 @@ div.scrollmenu li {
 <!-- show friend list -->
 <br>
 
-<p id = "mid_text">Send message to</p>
+<p>Send message to <input id="myInput" type="text" placeholder="search my friend" onkeyup="myFunction()"></p>
+
 <div class="scrollmenu">
-  <li><button class="friend_item" onclick="friendNew(this);">Add</button></li>
+  <li><button class="friend_item add_button" onclick="friendNew(this);">New</button></li>
   {% for f in friends %}
   <li><button class = 'send_message friend_item' data-myfriend = "{{f.my_friend.username}}">{{f.my_friend.username}}</button></li>
  {% endfor %} 
 </div>
 
-
-
+<script>
+  function myFunction() {
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    dt = document.getElementsByClassName("scrollmenu");
+    li = dt[0].getElementsByTagName("li");
+    for (i = 0; i < li.length; i++) {
+      friend = li[i].getElementsByTagName("button")[0];
+      if (friend) {
+        txtValue = friend.textContent;
+        if (txtValue.toUpperCase().startsWith(filter)) {
+          li[i].style.display = "inline-block";
+        } else {
+          li[i].style.display = "none";
+        }
+      }       
+    }
+  }
+  </script>
 
 
 
@@ -185,10 +209,24 @@ div.scrollmenu li {
 <p class="col-md-8 fs-4">
 <ul>
 {% for note in page_obj %}
-    <li onclick="OpenPopupCenter(this);" data-color = "{% cycle 'dec2cb'  'c5b9cd' 'abb1cf' %}" data-noteid = "{{note.id}}">
+{% if not outbox %}
+<li onclick="OpenPopupCenter(this);" data-color = "{% cycle 'dec2cb'  'c5b9cd' 'abb1cf' %}" data-noteid = "{{note.id}}" data-outbox="True">
+{% else %}
+    <li onclick="OpenPopupCenter(this);" data-color = "{% cycle 'dec2cb'  'c5b9cd' 'abb1cf' %}" data-noteid = "{{note.id}}"data-outbox="False" >
+{% endif %}
         <a href="#" class="btn btn-primary item"  >
+          {% if not note.read and not outbox%}
+          <p id = "{{note.id}}" style="color: red;">new!</p>
+          {% else %}
+          <p id = "{{note.id}}";></p>
+
+          {% endif %}
         <h2>{{note.title}}</h2>
+        {% if outbox %}
+        <p>{{note.receiver.username}}</p>
+        {% else %}
         <p>{{note.sender.username}}</p>
+        {% endif %}
         </a>
 </li>
 {% endfor %}
@@ -221,11 +259,14 @@ div.scrollmenu li {
 
 <script language="javascript" type="text/javascript">
   function OpenPopupCenter(event) {
+          document.getElementById(event.getAttribute('data-noteid')).innerHTML=""
+
+
             var w =400;
             var h= 400;
             var left = (screen.width - w) / 2;
             var top = (screen.height - h) / 4;
-            url =   "/notes/"+ event.getAttribute('data-noteid')+ "?color="+event.getAttribute('data-color')
+            url =   "/notes/"+ event.getAttribute('data-noteid')+ "?color="+event.getAttribute('data-color')+"&?outbox="+event.getAttribute('data-color')
             var myNewWindow =  window.open(url,'_blank',' width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
         } 
   function send(event){
