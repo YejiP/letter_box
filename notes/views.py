@@ -78,18 +78,25 @@ def logout_view(request):
 # get
 def index(request):
     if get_user(request).username:
-        notesList = Notes.objects.filter(
-            receiver=get_user(request)).order_by('-created_at')
+
+        try:
+            if request.GET['mailbox'] == 'outbox':
+                notesList = Notes.objects.filter(
+                    sender=get_user(request)).order_by('-created_at')
+        except:
+            notesList = Notes.objects.filter(
+                receiver=get_user(request)).order_by('-created_at')
 
         p = Paginator(notesList, 3)
         page_number = request.GET.get('page')
+        friends = Friendship.objects.filter(me=get_user(request))
 
         page_obj = p.get_page(page_number)
         context = {
-            'current_user': get_user(request), 'page_obj': page_obj}
+            'current_user': get_user(request), 'page_obj': page_obj, 'friends': friends}
     else:
         context = {
-            'current_user': get_user(request), 'page_obj': None}
+            'current_user': get_user(request), 'page_obj': None, 'friends': None}
     return render(request, 'notes/index.html', context)
 
 # get
@@ -201,7 +208,7 @@ def accept_friend(request):
 def add_friend(request):
     # construct data dictionary
     data = {'pending_request': [], 'my_request': [],
-            'friends': [], 'friend_username': None, 'already_friend': False, 'received': False, 'pending': False}
+            'friends': [], 'friend_username': None, 'already_friend': False, 'received': False, 'pending': False, 'noID': False}
     data['pending_request'] = Friend_request.objects.filter(
         from_user=get_user(request))
     data['my_request'] = Friend_request.objects.filter(
@@ -216,6 +223,7 @@ def add_friend(request):
         try:
             friend = User.objects.get(username=request.POST['friend_username'])
             if friend:
+                data['noID'] = False
                 data['friend_username'] = friend.username
                 # see if i already add this person to my friend
                 if Friendship.objects.filter(my_friend__username=request.POST['friend_username']).filter(me=get_user(request)):
@@ -225,7 +233,7 @@ def add_friend(request):
                 elif Friend_request.objects.filter(from_user=get_user(request)).filter(to_user__username=request.POST['friend_username']):
                     data['pending'] = True
         except:
-            pass
+            data['noID'] = True
 
         return render(request, 'notes/add_friend.html', data)
 

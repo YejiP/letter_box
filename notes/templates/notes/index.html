@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>index</title>
+    
+    <title>note</title>
     <!-- CSS only -->
     <link href="https://fonts.googleapis.com/css2?family=Reenie+Beanie&display=swap" rel="stylesheet">
 <style>
@@ -21,11 +22,7 @@ body {
   padding:5px;
 }
  
-h2 {
-  font-weight: bold;
-  font-size: 2rem;
-}
- 
+
 p {
   font-size: 1rem;
   font-weight: normal;
@@ -47,7 +44,7 @@ h2 {
   font-family: 'Reenie Beanie';
 
   font-weight: bold;
-  font-size: 4rem;
+  font-size: 3rem;
 }
 p {
   font-family: 'Reenie Beanie';
@@ -81,7 +78,7 @@ ul li a:hover,ul li a:focus{
 ul li a{
   text-decoration:none;
   color:#000;
-  background:#F8A488;
+  background:#dec2cb;
   display:block;
   height:10em;
   width:10em;
@@ -92,12 +89,47 @@ ul li a{
 ul li:nth-child(even) a{
   position:relative;
   top:5px;
-  background:#5AA897;
+  background:#c5b9cd;
 }
 ul li:nth-child(3n) a{
   position:relative;
   top:-5px;
-  background:#45526C;
+  background:#abb1cf;
+}
+
+.friend_item{
+  border-radius: 40%;
+  border: 0ch;
+  height: 75px; 
+  width: 75px;
+  font-family: 'Reenie Beanie';
+  font-weight: bold;
+  font-size: 2rem;
+  background: #f7cac9;
+  color: azure;
+  box-shadow: 5px 5px 7px rgba(33,33,33,.4);
+  display: inline-block;
+  white-space: normal;
+
+}
+
+.friend_item:hover{
+  box-shadow:10px 10px 7px rgba(0,0,0,.4);
+  transform: scale(1.05);
+  position:relative;
+  z-index:5;
+}
+
+div.scrollmenu {
+  overflow: auto;
+  white-space: nowrap;
+}
+
+div.scrollmenu li {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  text-decoration: none;
 }
 
 </style>
@@ -106,22 +138,12 @@ ul li:nth-child(3n) a{
     
     <div class="p-5 mb-4 bg-light rounded-3">
         <div class="container-fluid py-5">
-          <h1 class="display-5 fw-bold">Notes app</h1>
+          <h1 class="display-5 fw-bold">Stickies</h1>
           
           {% if current_user.username != "" %}
           user : {{current_user.username}} <a href="{% url 'logout_view' %}">logout</a>
           <br>
-          <a href="#" onclick="friendNew(this);">Add friend</a>
 
-          <script language="javascript" type="text/javascript">
-            function friendNew(event) {
-                var w =400;
-                var h= 400;
-                var left = (screen.width - w) / 2;
-                var top = (screen.height - h) / 4;
-                var myNewWindow =  window.open("{% url 'add_friend' %}",'_blank',' width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
-            } 
-          </script>
           {%else%}
     <a href="signup_new">create an account</a>
     <form id="loginForm"action="{% url 'login_view' %}" method = "post">{% csrf_token %}
@@ -136,29 +158,42 @@ ul li:nth-child(3n) a{
 
 {% if current_user.username != "" %}
 
+<!-- show friend list -->
+<br>
+
+<p id = "mid_text">Send message to</p>
+<div class="scrollmenu">
+  <li><button class="friend_item" onclick="friendNew(this);">Add</button></li>
+  {% for f in friends %}
+  <li><button class = 'send_message friend_item' data-myfriend = "{{f.my_friend.username}}">{{f.my_friend.username}}</button></li>
+ {% endfor %} 
+</div>
+
+
+
+
+
+
+
+<div id = "mail_box">
+  <p>
+
+ <span id="mid_text">My mailbox</span>
+ </p>
+<a href="/notes/">inbox</a>
+<a href="?mailbox=outbox">outbox</a>
 <p class="col-md-8 fs-4">
 <ul>
 {% for note in page_obj %}
-    <li onclick="OpenPopupCenter(this);" data-color = "{% cycle 'F8A488' '5AA897' '45526C'%}" data-noteid = "{{note.id}}">
-      <script language="javascript" type="text/javascript">
-        function OpenPopupCenter(event) {
-            var w =400;
-            var h= 400;
-            var left = (screen.width - w) / 2;
-            var top = (screen.height - h) / 4;
-            url =   "/notes/"+ event.getAttribute('data-noteid')+ "?color="+event.getAttribute('data-color')
-            var myNewWindow =  window.open(url,'_blank',' width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
-        } 
-      </script>
+    <li onclick="OpenPopupCenter(this);" data-color = "{% cycle 'dec2cb'  'c5b9cd' 'abb1cf' %}" data-noteid = "{{note.id}}">
         <a href="#" class="btn btn-primary item"  >
         <h2>{{note.title}}</h2>
-        <p>{{ note.text}}<br>{{note.sender.username}}</p>
+        <p>{{note.sender.username}}</p>
         </a>
-
 </li>
 {% endfor %}
-
 </ul>
+
 <div class="pagination">
     <span class="step-links">
         {% if page_obj.has_previous %}
@@ -176,8 +211,6 @@ ul li:nth-child(3n) a{
         {% endif %}
     </span>
 </div>
-
-
         </div>
       </div>
 
@@ -185,4 +218,35 @@ ul li:nth-child(3n) a{
     </p>
     {% endif %}
 </body>
+
+<script language="javascript" type="text/javascript">
+  function OpenPopupCenter(event) {
+            var w =400;
+            var h= 400;
+            var left = (screen.width - w) / 2;
+            var top = (screen.height - h) / 4;
+            url =   "/notes/"+ event.getAttribute('data-noteid')+ "?color="+event.getAttribute('data-color')
+            var myNewWindow =  window.open(url,'_blank',' width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+        } 
+  function send(event){
+        var w =400;
+        var h= 400;
+        var left = (screen.width - w) / 2;
+        var top = (screen.height - h) / 4;
+        var myNewWindow =  window.open("{% url 'new' %}?receiver="+this.getAttribute('data-myfriend'),'_blank',' width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+
+    }
+    var sm = document.getElementsByClassName('send_message')
+        if (sm !=null){
+            for (var i =0;i<sm.length;i++){
+                sm[i].addEventListener('click', send)}
+        }    
+  function friendNew(event) {
+      var w =400;
+      var h= 400;
+      var left = (screen.width - w) / 2;
+      var top = (screen.height - h) / 4;
+      var myNewWindow =  window.open("{% url 'add_friend' %}",'_blank',' width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+  } 
+</script>
 </html>

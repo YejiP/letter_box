@@ -41,8 +41,8 @@
     var h = 400;
     var left = (screen.width - w) / 4;
     var top = (screen.height - h) / 4;
-    url = "{% url 'new' %}";
     receiver = event.target.getAttribute("data-sender");
+    url = "{% url 'new' %}?receiver=" + receiver;
     var mywindow = window.open(
       url,
       "_blank",

@@ -32,9 +32,9 @@
     </script>
     <div>
       <br />
-      <h2>title : {{notes.title}}</h2>
 
-      <p>sender : {{notes.sender.username}}<br />{{notes.text}}</p>
+      <h2>{{notes.title}}</h2>
+      <p>{{notes.text}} <br />From : {{notes.sender.username}}</p>
 
       {% if notes.sender.username == current_user.username %}
       <button
