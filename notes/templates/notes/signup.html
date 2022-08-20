@@ -33,22 +33,12 @@
     <br />
     Signup page
     <form name="myform" action="{% url 'signup' %}" method="post">
-      {% csrf_token %}<span style="color: red">{{error_message}}</span>
+      {% csrf_token %}
+      <span style="color: red">{{error_message}}</span>
       <div class="form-group">
-        <div
-          type="text"
-          class="form-control form-control-lg"
-          id="user_id"
-          placeholder="Type ID"
-        >
-          {{ regForm.username }}
-        </div>
+        {{ regForm.username }}
         <br />
-        <div class="form-control form-control-lg">{{ regForm.password }}</div>
-
-        <div class="form-control form-control-lg">
-          {{ regForm.conPassword }}
-        </div>
+        {{ regForm.password }} {{ regForm.conPassword }}
         <br />
         <button class="btn btn-outline-light">submit</button>
       </div>

@@ -61,50 +61,43 @@ rel="stylesheet"
     {% if friend_username %}
     <span id= "friend_username"> {{friend_username}} <span/>
         {% if already_friend %}
-        <button class="btn btn-outline-light" disabled>Alredy friend</button>
+          <button class="btn btn-outline-light" disabled>Already friend</button>
         {% elif received %}
-        <button  class = 'accept_friend btn btn-outline-light' data-with="{{friend_username}}"">Be friend</button>
+          <button class='accept_friend btn btn-outline-light' data-with="{{friend_username}}">Accept</button>
         {% elif pending %}
-        <button class="btn btn-outline-light" disabled>Already sent</button>
-
+          <button class="btn btn-outline-light" disabled>Already sent</button>
         {% else %}
-    <button id="send_friend_request" type="submit" data-towhom="{{friend_username}}">Send friend request</button>
-    {% endif %}
+          <button id="send_friend_request" type="submit" data-to-whom="{{friend_username}}">Send friend request</button>
+        {% endif %}
 {% elif not friend_username %}
 {% if noID %}
-<span style="color : red">No user under this id</span>
+<span style="color:red">No user under this id</span>
 {% endif %}
 {% endif %}
 
-    <p><h1>New Requests </h1>
+    <p><h1>New Requests</h1>
         {% if not my_request %}
-        <span style="color : red"> None</span> 
+        <span style="color:red">None</span> 
         {% endif %}
         {% for f in my_request %}
-         <button class = 'accept_friend' data-with= "{{f.from_user.username}}">{{f.from_user.username}}</button>
+         <button class='accept_friend' data-with="{{f.from_user.username}}">{{f.from_user.username}}</button>
         {% endfor %}
     </p>
 
     <p><h1>Pending Request </h1>
         {% if not pending_request %}
-        <span style="color : red"> None</span> 
+        <span style="color:red"> None</span> 
         {% endif %}
-
-    {% for pr in pending_request %}
-
-    <button>{{pr.to_user.username}}</button>
-  
-    {% endfor %}
-  
+        {% for pr in pending_request %}
+          <button>{{pr.to_user.username}}</button>
+        {% endfor %}
 </p>
-
-
 
     <script>
         var fr = document.getElementById('send_friend_request')
         if (fr !=null){
             fr.addEventListener('click', function(event){
-                window.location.href = "{% url 'send_friend_request'%}?friend_username="+this.getAttribute("data-towhom");
+                window.location.href = "{% url 'send_friend_request'%}?friend_username="+this.getAttribute("data-to-whom");
             })
 
         }
@@ -120,9 +113,6 @@ rel="stylesheet"
         function accept_friend(event){
             window.location.href= "{% url 'accept_friend' %}?with="+this.getAttribute('data-with')
         }
-
-
-        
     </script>
   </body>
 </html>

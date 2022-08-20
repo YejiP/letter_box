@@ -2,7 +2,7 @@ from .models import App_user
 import json
 
 
-class User_job():
+class UserJob():
     @classmethod
     def perform(self, ch, method, properties, body):
         print(" [x] %r" % body)

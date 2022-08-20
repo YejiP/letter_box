@@ -1,7 +1,7 @@
 import pika
 
 
-class Event_subscriber():
+class EventSubscriber():
     @classmethod
     def subscribe(self, job_class):
         connection = pika.BlockingConnection(
@@ -21,16 +21,16 @@ class Event_subscriber():
 """
 source ../venv/bin/activate
 python manage.py shell_plus
-from notes.event_subscriber import Event_subscriber
-from notes.audit_job import Audit_job
-Event_subscriber.subscribe(Audit_job)
+from notes.EventSubscriber import EventSubscriber
+from notes.audit_job import AuditJob
+EventSubscriber.subscribe(AuditJob)
 
 
 source ../venv/bin/activate
 python manage.py shell_plus
-from notes.event_subscriber import Event_subscriber
-from notes.user_job import User_job
-Event_subscriber.subscribe(User_job)
+from notes.EventSubscriber import EventSubscriber
+from notes.user_job import UserJob
+EventSubscriber.subscribe(UserJob)
 """
 """
 separate queue for each job, 

@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>detail</title>
+    <!-- https://www.dev2qa.com/how-to-use-static-css-js-files-in-django/ -->
     {% include './script.html' %}
     <link
       href="https://fonts.googleapis.com/css2?family=Reenie+Beanie&display=swap"
@@ -13,7 +14,6 @@
     <style>
       h2 {
         font-family: "Reenie Beanie";
-
         font-weight: bold;
         font-size: 4rem;
       }
@@ -34,7 +34,11 @@
       <br />
 
       <h2>{{notes.title}}</h2>
-      <p>{{notes.text}} <br />From : {{notes.sender.username}}</p>
+      <p>
+        {{notes.text}}
+        <br />
+        From: {{notes.sender.username}}
+      </p>
 
       {% if notes.sender.username == current_user.username %}
       <button

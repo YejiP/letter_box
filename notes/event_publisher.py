@@ -1,7 +1,7 @@
 import pika
 
 
-class Emit_event():
+class EventPublisher():
     def publish(message):
         connection = pika.BlockingConnection(
             pika.ConnectionParameters(host='localhost'))
