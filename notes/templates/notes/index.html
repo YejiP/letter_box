@@ -172,7 +172,7 @@ div.scrollmenu li {
 <div class="scrollmenu">
   <li><button class="friend_item add_button" onclick="friendNew(this);">New</button></li>
   {% for f in friends %}
-  <li><button class = 'send_message friend_item' data-myfriend = "{{f.my_friend.username}}">{{f.my_friend.username}}</button></li>
+  <li><button class = 'send_message friend_item' data-myfriend = "{{f}}">{{f}}</button></li>
  {% endfor %} 
 </div>
 <!-- move -->
@@ -210,16 +210,15 @@ div.scrollmenu li {
 <ul>
 {% for note in page_obj %}
 {% if not outbox %}
-<li onclick="OpenPopupCenter(this);" data-color = "{% cycle 'dec2cb'  'c5b9cd' 'abb1cf' %}" data-noteid = "{{note.id}}" data-outbox="True">
+<li onclick="OpenPopupCenter(this);" data-color = "{% cycle 'dec2cb'  'c5b9cd' 'abb1cf' %}" data-noteid = "{{note.id}}" data-mailbox='inbox'>
 {% else %}
-    <li onclick="OpenPopupCenter(this);" data-color = "{% cycle 'dec2cb'  'c5b9cd' 'abb1cf' %}" data-noteid = "{{note.id}}"data-outbox="False" >
+    <li onclick="OpenPopupCenter(this);" data-color = "{% cycle 'dec2cb'  'c5b9cd' 'abb1cf' %}" data-noteid = "{{note.id}}" data-mailbox='outbox' >
 {% endif %}
         <a href="#" class="btn btn-primary item"  >
           {% if not note.read and not outbox%}
           <p id = "{{note.id}}" style="color: red;">new!</p>
           {% else %}
           <p id = "{{note.id}}";></p>
-
           {% endif %}
         <h2>{{note.title}}</h2>
         {% if outbox %}
@@ -264,7 +263,7 @@ div.scrollmenu li {
             var h= 400;
             var left = (screen.width - w) / 2;
             var top = (screen.height - h) / 4;
-            url =   "/"+ event.getAttribute('data-noteid')+ "?color="+event.getAttribute('data-color')+"&?outbox="+event.getAttribute('data-color')
+            url =   "/"+ event.getAttribute('data-noteid')+ "?color="+event.getAttribute('data-color')+"&mailbox="+event.getAttribute('data-mailbox')
             // modal better... bc it can get blocked..... -> 하지마! 힘드니ㄱ가..
             var myNewWindow =  window.open(url,'_blank',' width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
         } 

@@ -70,16 +70,17 @@ join table..? ....??????????????
 """
 
 
-class Friend_request(models.Model):
-    from_user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='from_user')
-    to_user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='to_user')
+# class Friend_request(models.Model):
+#     from_user = models.ForeignKey(
+#         User, on_delete=models.CASCADE, related_name='from_user')
+#     to_user = models.ForeignKey(
+#         User, on_delete=models.CASCADE, related_name='to_user')
 
 
 class Friendship(models.Model):
     # name.. daechoong..
-    me = models.ForeignKey(
+    user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='me')
-    my_friend = models.ForeignKey(
+    friend = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='my_friend')
+    status = models.BooleanField(default=False)

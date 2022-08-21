@@ -80,7 +80,7 @@ rel="stylesheet"
         <span style="color:red">None</span> 
         {% endif %}
         {% for f in my_request %}
-         <button class='accept_friend' data-with="{{f.from_user.username}}">{{f.from_user.username}}</button>
+         <button class='accept_friend' data-with="{{f.user.username}}">{{f.user.username}}</button>
         {% endfor %}
     </p>
 
@@ -89,7 +89,7 @@ rel="stylesheet"
         <span style="color:red"> None</span> 
         {% endif %}
         {% for pr in pending_request %}
-          <button>{{pr.to_user.username}}</button>
+          <button>{{pr.friend.username}}</button>
         {% endfor %}
 </p>
 

@@ -2,8 +2,8 @@ import pwd
 from django.shortcuts import render
 from django.shortcuts import redirect
 from .models import Notes
-from .models import Friend_request
 from .models import Friendship
+from django.db.models import Q
 
 from .models import User
 from django.http import Http404, HttpResponse
@@ -101,8 +101,12 @@ def index(request):
         page_number = request.GET.get('page')
         page_obj = p.get_page(page_number)
 
-        friends = Friendship.objects.filter(me=get_user(request))
-
+        friends_obj = Friendship.objects.filter(Q(
+            user=get_user(request)) & Q(status=True))
+        friends_obj2 = Friendship.objects.filter(Q(
+            friend=get_user(request)) & Q(status=True))
+        friends = list(map(lambda x: x.friend.username, friends_obj)) + \
+            list(map(lambda x: x.user.username, friends_obj2))
         context = {
             'current_user': get_user(request),
             'page_obj': page_obj,
@@ -121,7 +125,8 @@ def detail(request, note_id):
     note = Notes.objects.get(pk=note_id)
     color = request.GET.get('color')
     # check the boolean not string
-    if request.GET.get('outbox') == "False":
+    print(request.GET)
+    if request.GET.get('mailbox') == "inbox":
         note.read = True
         note.save()
     return render(request, 'notes/detail.html', {'notes': note, 'color': color, 'current_user': get_user(request)})
@@ -200,33 +205,20 @@ def delete(request, note_id):
     return HttpResponse('<script type="text/javascript">window.close(); window.opener.parent.location.reload();</script>')
 
 
-def accept_friend(request):
-    with_whom = User.objects.get(username=request.GET['with'])
-    Friend_request.objects.filter(
-        from_user=with_whom).filter(to_user=get_user(request)).delete()
-    Friendship.objects.create(me=with_whom, my_friend=get_user(request))
-    if not Friendship.objects.filter(me=get_user(request)).filter(my_friend=with_whom):
-        Friendship.objects.create(me=get_user(request), my_friend=with_whom)
-    return redirect('add_friend')
-
-
 def add_friend(request):
-    # construct data dictionary
     data = {
-        'pending_request': [],
-        'my_request': [],
-        'friends': [],
+        'pending_request': Friendship.objects.filter(
+            Q(user=get_user(request)) & Q(status=False)),
+        'my_request':  Friendship.objects.filter(
+            Q(friend=get_user(request)) & Q(status=False)),
+        'friends': Friendship.objects.filter(
+            Q(user=get_user(request)) | Q(friend=get_user(request)) & Q(status=True)),
         'friend_username': None,
         'already_friend': False,
         'received': False,
         'pending': False,
         'noID': False
     }
-    data['pending_request'] = Friend_request.objects.filter(
-        from_user=get_user(request))
-    data['my_request'] = Friend_request.objects.filter(
-        to_user=get_user(request))
-    data['friends'] = Friendship.objects.filter(me=get_user(request))
 
     # process request according to request method
     if request.method == 'GET':
@@ -241,22 +233,29 @@ def add_friend(request):
                 # see if i already add this person to my friend
                 if Friendship.objects.filter(my_friend__username=request.POST['friend_username']).filter(me=get_user(request)):
                     data['already_friend'] = True
-                elif Friend_request.objects.filter(to_user=get_user(request)).filter(from_user__username=request.POST['friend_username']):
+                elif Friendship.objects.filter(to_user=get_user(request)).filter(from_user__username=request.POST['friend_username']):
                     data['received'] = True
-                elif Friend_request.objects.filter(from_user=get_user(request)).filter(to_user__username=request.POST['friend_username']):
+                elif Friendship.objects.filter(from_user=get_user(request)).filter(to_user__username=request.POST['friend_username']):
                     data['pending'] = True
         except:
             data['noID'] = True
 
         return render(request, 'notes/add_friend.html', data)
 
+# this function will be hit if friend exist, but not pending.
+
 
 def send_friend_request(request):
-    if request.method == 'GET':
-        to_user = User.objects.get(username=request.GET['friend_username'])
-        if not Friend_request.objects.filter(from_user=get_user(request)).filter(to_user=to_user):
-            Friend_request.objects.create(
-                from_user=get_user(request), to_user=to_user)
-            return redirect('add_friend')
-        else:
-            return HttpResponse('<script type="text/javascript">alert("already added");window.location.href="/notes/add_friend/"</script>')
+    to_user = User.objects.get(username=request.GET['friend_username'])
+    Friendship.objects.create(
+        user=get_user(request), friend=to_user, status=False)
+    return redirect('add_friend')
+
+
+def accept_friend(request):
+    with_whom = User.objects.get(username=request.GET['with'])
+    friend = Friendship.objects.filter(
+        user=with_whom).get(friend=get_user(request))
+    friend.status = True
+    friend.save()
+    return redirect('add_friend')
