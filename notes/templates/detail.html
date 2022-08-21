@@ -5,31 +5,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>detail</title>
-    <!-- https://www.dev2qa.com/how-to-use-static-css-js-files-in-django/ -->
-    {% include './script.html' %}
-    <link
-      href="https://fonts.googleapis.com/css2?family=Reenie+Beanie&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      h2 {
-        font-family: "Reenie Beanie";
-        font-weight: bold;
-        font-size: 4rem;
-      }
-      p {
-        font-family: "Reenie Beanie";
-        font-size: 2rem;
-      }
-    </style>
+    {% load static %}
+    <script src="{% static 'js/detail.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}" />
   </head>
 
   <body>
     <span id="color" hidden>#{{color}}</span>
-    <script>
-      document.body.style.backgroundColor =
-        document.getElementById("color").textContent;
-    </script>
     <div>
       <br />
 
@@ -46,6 +28,7 @@
         type="button"
         id="edit"
         data-color="{{color}}"
+        data-next-url="{% url 'edit' notes.id%}"
       >
         Edit
       </button>
@@ -56,11 +39,17 @@
         type="button"
         id="reply"
         data-sender="{{notes.sender.username}}"
+        data-next-url="{% url 'new' %}"
       >
         Reply
       </button>
       {% endif %}
-      <button class="btn btn-outline-light" type="button" id="delete">
+      <button
+        class="btn btn-outline-light"
+        type="button"
+        id="delete"
+        data-next-url="{% url 'delete' notes.id%}"
+      >
         Delete
       </button>
     </div>

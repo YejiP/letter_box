@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Friend</title>
+{% load static %}
+<script src="{% static 'js/add_friend.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/add_friend.css' %}" />
+  </head>
+
+  <body>
+    <form action="{% url 'add_friend' %}" method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <input
+          maxlength="10"
+          required
+          class="form-control form-control-lg"
+          name="friend_username"
+          type="text"
+          placeholder="User ID"
+        />
+      </div>
+
+      <input type="submit" class="btn btn-outline-dark" value="Search" "/>
+      
+    </form>
+<br>
+    {% if friend_username %}
+    <span id= "friend_username"> {{friend_username}} <span/>
+        {% if already_friend %}
+          <button class="btn btn-outline-dark" disabled>Already friend</button>
+        {% elif received %}
+          <button class='accept_friend btn btn-outline-light' data-with="{{friend_username}}">Accept</button>
+        {% elif pending %}
+          <button class="btn btn-outline-dark" disabled>Already sent</button>
+        {% else %}
+          <button id="send_friend_request" type="submit" data-to-whom="{{friend_username}}" data-next-url="{% url 'send_friend_request'%}">Send friend request</button>
+        {% endif %}
+{% elif not friend_username %}
+{% if noID %}
+<span style="color:red">No user under this id</span>
+{% endif %}
+{% endif %}
+
+    <p><h1>New Requests</h1>
+        {% if not my_request %}
+        <span style="color:red">None</span> 
+        {% endif %}
+        {% for f in my_request %}
+         <button class='accept_friend' data-with="{{f.user.username}}" data-next-url="{% url 'accept_friend' %}">{{f.user.username}}</button>
+        {% endfor %}
+    </p>
+
+    <p><h1>Pending Request </h1>
+        {% if not pending_request %}
+        <span style="color:red"> None</span> 
+        {% endif %}
+        {% for pr in pending_request %}
+          <button>{{pr.friend.username}}</button>
+        {% endfor %}
+</p>
+  </body>
+</html>

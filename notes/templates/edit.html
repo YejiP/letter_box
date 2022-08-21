@@ -5,23 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Edit your note</title>
-    <style>
-      input {
-        opacity: 0.7;
-      }
-      div {
-        margin: 10px;
-        padding: 1px;
-      }
-    </style>
-    {% include './script.html' %}
+    {% load static %}
+    <script src="{% static 'js/detail.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}" />
   </head>
   <body>
     <span id="color" hidden>#{{color}}</span>
-    <script>
-      document.body.style.backgroundColor =
-        document.getElementById("color").textContent;
-    </script>
     <br />
     <form action="{% url 'update' notes.id %}" method="post">
       {% csrf_token %}
