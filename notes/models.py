@@ -2,10 +2,13 @@ from asyncore import read
 from tkinter import CASCADE
 from django.db import models
 from django.contrib.auth.models import User
-from psycopg2 import Timestamp
+from datetime import datetime, timezone
+from .event_publisher import EventPublisher
+
+# implement audit job for create,
 
 
-class App_user(models.Model):
+class AppUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     last_active_time = models.DateTimeField()
 
@@ -36,6 +39,16 @@ class Audit(models.Model):
     data = models.CharField(max_length=10000)
     created_at = models.DateTimeField(auto_now_add=True)
 
+
+class Friendship(models.Model):
+    # name.. daechoong..
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='me')
+    friend = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='my_friend')
+    status = models.BooleanField(default=False)
+
+
 # https://realpython.com/python-pep8/ use camel case for python class name
 
 
@@ -45,7 +58,7 @@ class Audit(models.Model):
 combine two table..
 1. name 
 
-#enum, state machine -> confusing.?
+# enum, state machine -> confusing.?
 relationship status
 friend   0
 pending  1
@@ -68,19 +81,3 @@ i don't need double records.. why,,not,,?
 
 join table..? ....??????????????
 """
-
-
-# class Friend_request(models.Model):
-#     from_user = models.ForeignKey(
-#         User, on_delete=models.CASCADE, related_name='from_user')
-#     to_user = models.ForeignKey(
-#         User, on_delete=models.CASCADE, related_name='to_user')
-
-
-class Friendship(models.Model):
-    # name.. daechoong..
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='me')
-    friend = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='my_friend')
-    status = models.BooleanField(default=False)
