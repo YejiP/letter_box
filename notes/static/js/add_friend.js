@@ -31,7 +31,7 @@ if (af!=null){
         parent_doc.getElementById("friend_container").appendChild(li)
 
         //    add new friend to the parent view
-        alert(parent_doc.getElementById("new_notification").innerHTML)
+        parent_doc.getElementById("new_notification").innerHTML
         parent_doc.getElementById("new_notification").innerHTML = parseInt(parent_doc.getElementById("new_notification").innerHTML) -1
         
         
