@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
-from .models import User
+from .models import Notes, User
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import get_user, logout
@@ -34,9 +34,13 @@ def signup(request):
                 username=username, password=password, last_login=timestamp
             )
             login(request, user)
+            callie = User.objects.get(username='callie')
             Friendship.objects.create(
-                user=get_user(request), friend=User.objects.get(username='callie'), status=True)
-
+                user=get_user(request), friend=callie, status=True)
+            Notes.objects.create(sender=callie,
+                                 receiver=get_user(request),
+                                 title='Welcome to Stickies!',
+                                 text='Express whatever.. to your friends! =)')
         return redirect('index')
     return render(request, 'signup.html', {'regForm': regForm, 'error_message': 'Data is not valid'})
 
