@@ -32,4 +32,4 @@ tornado==6.2
 urllib3==1.26.10
 vine==5.0.0
 wcwidth==0.2.5
-whitenoise==4.1.2
+whitenoise==6.2.0

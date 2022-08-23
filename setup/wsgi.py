@@ -1,18 +1,16 @@
-"""
-WSGI config for setup project.
-
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/4.0/howto/deployment/wsgi/
-"""
-
+from setup import MyWSGIApp
+from whitenoise import WhiteNoise
+from whitenoise.django import DjangoWhiteNoise
 import os
 from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'setup.settings')
 
 
-from whitenoise.django import DjangoWhiteNoise
 application = get_wsgi_application()
 application = DjangoWhiteNoise(application)
+
+
+application = MyWSGIApp()
+application = WhiteNoise(application, root="/path/to/static/files")
+application.add_files("/path/to/more/static/files", prefix="more-files/")
