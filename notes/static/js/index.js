@@ -23,19 +23,19 @@ if (search!=null){
 
 }
 
-function send(){
+function send(event){
+  if (event.target.classList.contains('send_message')){
   var w =400;
   var h= 400;
   var left = (screen.width - w) / 2;
   var top = (screen.height - h) / 4;
-  var myNewWindow =  window.open(this.getAttribute('data-next-url')+"?receiver="+this.getAttribute('data-myfriend'),'_blank',' width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
-
+  var myNewWindow =  window.open(event.target.getAttribute('data-next-url')+"?receiver="+event.target.getAttribute('data-myfriend'),'_blank',' width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+  }
+ }
+var fc = document.getElementById('friend_container')
+if (fc!=null){
+  fc.addEventListener('click',send)
 }
-var sm = document.getElementsByClassName('send_message')
-  if (sm !=null){
-      for (var i =0;i<sm.length;i++){
-          sm[i].addEventListener('click', send)}
-  }    
 
 
 function friendNew() {
@@ -46,8 +46,10 @@ var top = (screen.height - h) / 4;
 var myNewWindow =  window.open(this.getAttribute('data-next-url'),'_blank',' width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
 } 
 
+
+
 var fn = document.getElementsByClassName('add_button')
-if (fn !=null){
+if (fn){
     fn[0].addEventListener('click', friendNew)}
 
 

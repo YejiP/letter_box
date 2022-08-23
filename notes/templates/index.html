@@ -33,8 +33,9 @@
 {% if current_user.username %}
 <br>
 <p>Send message to <input id="search" type="text" placeholder="search my friend"></p>
-<div class="scrollmenu">
-  <li><button class="friend_item add_button"   data-next-url="{% url 'add_friend' %}">New</button></li>
+
+<div class="scrollmenu" id="friend_container">
+  <li><button class="friend_item add_button"   data-next-url="{% url 'add_friend' %}">New<span id ="new_notification" style="color:yellow">{{new_request}}</span></button></li>
 
   {% for f in friends %}
   <li><button class = 'send_message friend_item' data-myfriend = "{{f}}" data-next-url="{% url 'new' %}">{{f}}</button></li>

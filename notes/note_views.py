@@ -1,4 +1,6 @@
 from django.shortcuts import render
+
+from notes.user_views import friend_info
 from .models import Notes
 from .models import Friendship
 from django.db.models import Q
@@ -6,6 +8,7 @@ from .models import User
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user
 from django.core.paginator import Paginator
+import json
 
 
 def index(request):
@@ -25,18 +28,12 @@ def index(request):
         page_number = request.GET.get('page')
         page_obj = p.get_page(page_number)
 
-        friends_obj = Friendship.objects.filter(Q(
-            user=get_user(request)) & Q(status=True))
-        friends_obj2 = Friendship.objects.filter(Q(
-            friend=get_user(request)) & Q(status=True))
-        friends = list(map(lambda x: x.friend.username, friends_obj)) + \
-            list(map(lambda x: x.user.username, friends_obj2))
-
         context = {
             'current_user': get_user(request),
             'page_obj': page_obj,
-            'friends': friends,
             'outbox': outbox,
+            'friends': json.loads(friend_info(request).content.decode('utf-8'))["friend"],
+            'new_request': json.loads(friend_info(request).content.decode('utf-8'))["new_request"],
             'loginFailed': False
         }
     return render(request, 'index.html', context)
@@ -83,10 +80,9 @@ def create(request):
 
 def edit(request, note_id):
     try:
+        note = Notes.objects.get(pk=note_id)
         if note.receiver != get_user(request) and note.sender != get_user(request):
             return render(request, 'error.html', {'error_message': 'You are not authorized to see this note.'})
-
-        note = Notes.objects.get(pk=note_id)
         color = request.GET.get('color')
 
     except:

@@ -8,6 +8,7 @@ from .form import SignUpForm
 from .models import Friendship
 from django.db.models import Q
 from datetime import datetime, timezone
+from django.http import JsonResponse
 
 
 def signup_new(request):
@@ -22,11 +23,11 @@ def signup(request):
         password = request.POST['password']
         con_password = request.POST['conPassword']
         if password != con_password:
-            return render(request, 'notes/signup.html', {'regForm': regForm, 'error_message': 'Password does not match'})
+            return render(request, 'signup.html', {'regForm': regForm, 'error_message': 'Password does not match'})
         try:
             user = User.objects.get(username=username)
             if user is not None:
-                return render(request, 'notes/signup.html', {'regForm': regForm, 'error_message': 'username must be unique'})
+                return render(request, 'signup.html', {'regForm': regForm, 'error_message': 'username must be unique'})
         except:
             timestamp = datetime.now(timezone.utc)
             user = User.objects.create_user(
@@ -117,3 +118,18 @@ def accept_friend(request):
     friend.status = True
     friend.save()
     return redirect('add_friend')
+
+
+def friend_info(request):
+    if request.method == "GET":
+        friends_obj = Friendship.objects.filter(Q(
+            user=get_user(request)) & Q(status=True))
+        friends_obj2 = Friendship.objects.filter(Q(
+            friend=get_user(request)) & Q(status=True))
+        friends = list(map(lambda x: x.friend.username, friends_obj)) + \
+            list(map(lambda x: x.user.username, friends_obj2))
+        new_request = Friendship.objects.filter(
+            Q(friend__username=get_user(request)) & Q(status=False)).count()
+        print(new_request)
+        return JsonResponse({'friend': friends, 'new_request': new_request}, status=200)
+    return JsonResponse({}, status=400)

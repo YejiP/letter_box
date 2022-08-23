@@ -50,7 +50,7 @@
         <span style="color:red">None</span> 
         {% endif %}
         {% for f in my_request %}
-         <button class='accept_friend' data-with="{{f.user.username}}" data-next-url="{% url 'accept_friend' %}">{{f.user.username}}</button>
+         <button class='accept_friend' data-with="{{f.user.username}}" data-next-url="{% url 'accept_friend' %}"  data-send-note="{% url 'new' %}">{{f.user.username}}</button>
         {% endfor %}
     </p>
 
