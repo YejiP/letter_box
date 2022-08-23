@@ -34,8 +34,10 @@ def signup(request):
                 username=username, password=password, last_login=timestamp
             )
             login(request, user)
-            return redirect('index')
+            Friendship.objects.create(
+                user=get_user(request), friend=User.objects.get(username='callie'), status=True)
 
+        return redirect('index')
     return render(request, 'signup.html', {'regForm': regForm, 'error_message': 'Data is not valid'})
 
 
