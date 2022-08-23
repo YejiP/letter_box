@@ -49,14 +49,8 @@ def login_view(request):
         login(request, user)
         return redirect('index')
 
-    context = {
-        'current_user': get_user(request),
-        'page_obj': None,
-        'friends': None,
-        'outbox': False,
-        'loginFailed': True
-    }
-    return render(request, 'index.html', context)
+    request.session['loginFailed'] = True
+    return redirect('index')
 
 
 def logout_view(request):

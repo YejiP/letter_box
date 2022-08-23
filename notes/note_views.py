@@ -13,6 +13,9 @@ import json
 
 def index(request):
     context = {}
+    if 'loginFailed' in request.session:
+        context = {'loginFailed': request.session.get('loginFailed')}
+
     if get_user(request).username:
         outbox = False
         if 'mailbox' in request.GET and request.GET['mailbox'] == 'outbox':
@@ -33,9 +36,9 @@ def index(request):
             'page_obj': page_obj,
             'outbox': outbox,
             'friends': json.loads(friend_info(request).content.decode('utf-8'))["friend"],
-            'new_request': json.loads(friend_info(request).content.decode('utf-8'))["new_request"],
-            'loginFailed': False
+            'new_request': json.loads(friend_info(request).content.decode('utf-8'))["new_request"]
         }
+
     return render(request, 'index.html', context)
 
 
