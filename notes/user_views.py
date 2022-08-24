@@ -1,3 +1,4 @@
+from operator import truediv
 from django.shortcuts import render
 from django.shortcuts import redirect
 from .models import Notes, User
@@ -90,11 +91,16 @@ def add_friend(request):
                 data['noID'] = False
                 data['friend_username'] = friend.username
                 # see if i already add this person to my friend
-                if Friendship.objects.filter(Q(friend__username=request.POST['friend_username']) & Q(user=get_user(request) & Q(status=True))) or Friendship.objects.filter(Q(user=request.POST['friend_username']) & Q(friend__username=get_user(request) & Q(status=True))):
+                fa = Friendship.objects.filter(
+                    user__username=friend.username).filter(friend__username=get_user(request).username)
+                fb = Friendship.objects.filter(
+                    friend__username=friend.username).filter(user__username=get_user(request).username)
+
+                if fa.filter(status=True) or fb.filter(status=True):
                     data['already_friend'] = True
-                elif Friendship.objects.filter(Q(friend__username=get_user(request)) & Q(user=request.POST['friend_username'])):
+                elif fa:
                     data['received'] = True
-                elif Friendship.objects.filter(Q(user=get_user(request)) & Q(friend__username=request.POST['friend_username'])):
+                elif fb:
                     data['pending'] = True
         except:
             data['noID'] = True
@@ -126,7 +132,7 @@ def friend_info(request):
             user=get_user(request)) & Q(status=True))
         friends_obj2 = Friendship.objects.filter(Q(
             friend=get_user(request)) & Q(status=True))
-        friends = list(map(lambda x: x.friend.username, friends_obj)) + \
+        friends = list(map(lambda x: x.friend.username, friends_obj)) +\
             list(map(lambda x: x.user.username, friends_obj2))
         new_request = Friendship.objects.filter(
             Q(friend__username=get_user(request)) & Q(status=False)).count()

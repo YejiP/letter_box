@@ -33,7 +33,7 @@
         {% if already_friend %}
           <button class="btn btn-outline-dark" disabled>Already friend</button>
         {% elif received %}
-          <button class='accept_friend btn btn-outline-light' data-with="{{friend_username}}">Accept</button>
+          <button class='accept_friend btn btn-outline-light' data-next-url="{% url 'accept_friend' %}" data-with="{{friend_username}}">Accept</button>
         {% elif pending %}
           <button class="btn btn-outline-dark" disabled>Already sent</button>
         {% else %}
