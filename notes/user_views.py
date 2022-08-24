@@ -89,9 +89,10 @@ def add_friend(request):
         try:
             if request.POST['friend_username'] == get_user(request).username:
                 data['myself'] = True
-            elif friend:
-                friend = User.objects.get(
-                    username=request.POST['friend_username'])
+                return render(request, 'add_friend.html', data)
+
+            friend = User.objects.get(username=request.POST['friend_username'])
+            if friend:
                 data['noID'] = False
                 data['friend_username'] = friend.username
                 # see if i already add this person to my friend

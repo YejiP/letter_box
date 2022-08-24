@@ -28,11 +28,13 @@
       
     </form>
 <br>
+    {% if myself %}
+        <button class="btn btn-outline-dark" disabled>You can't add yourself</button>
+    {% endif %}
     {% if friend_username %}
     <span id= "friend_username"> {{friend_username}} <span/>
-        {% if myself %}
-          <button class="btn btn-outline-dark" disabled>You can't add yourself</button>
-        {% elif already_friend %}
+        
+        {% if already_friend %}
           <button class="btn btn-outline-dark" disabled>Already friend</button>
         {% elif received %}
           <button class='accept_friend btn btn-outline-light' data-next-url="{% url 'accept_friend' %}" data-with="{{friend_username}}">Accept</button>
