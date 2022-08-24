@@ -139,9 +139,8 @@ def friend_info(request):
             friend=get_user(request)) & Q(status=True))
         friends = list(map(lambda x: x.friend.username, friends_obj)) +\
             list(map(lambda x: x.user.username, friends_obj2))
-        friends.sort()
+        friends.sort(key=lambda x: x.lower())
         new_request = Friendship.objects.filter(
             Q(friend__username=get_user(request)) & Q(status=False)).count()
-        print(new_request)
         return JsonResponse({'friend': friends, 'new_request': new_request}, status=200)
     return JsonResponse({}, status=400)
