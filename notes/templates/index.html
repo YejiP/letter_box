@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>note</title>
+{% load static%}
+<script src="{% static 'js/index.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/index.css' %}" />
+
+</head>
+<body>
+    <div class="p-5 mb-4 bg-light rounded-3">
+        <div class="container-fluid py-5">
+          <h1 class="display-5 fw-bold">Stickies</h1>
+          {% if current_user.username %}
+            user : {{current_user.username}} <a href="{% url 'logout' %}">logout</a>
+            <br>
+          {%else%}
+            <a href="signup_new">create an account</a>
+            <form id="loginForm"action="{% url 'login' %}" method = "post">{% csrf_token %}
+              id : <input type="text" name = "user_id">
+              pwd : <input type="password" name="user_pwd">
+              <button class="btn btn-primary btn-lg" type="submit">login!</button>
+              {% if loginFailed %}
+                <br><span id = "login_message" style="color:red">Invalid login</span>
+              {% endif %}
+            </form>
+          {% endif %}
+
+{% if current_user.username %}
+<br>
+<p>Send message to <input id="search" type="text" placeholder="search my friend"></p>
+
+<div class="scrollmenu" id="friend_container">
+  <li><button class="friend_item add_button"   data-next-url="{% url 'add_friend' %}">New<span id ="new_notification" style="color:yellow">{{new_request}}</span></button></li>
+
+  {% for f in friends %}
+  <li><button class = 'send_message friend_item' data-myfriend = "{{f}}" data-next-url="{% url 'new' %}">{{f}}</button></li>
+ {% endfor %} 
+</div>
+
+<div id = "mail_box">
+  <p>
+
+ <span id="mid_text">My mailbox</span>
+ </p>
+<a href="{% url 'index' %}">inbox</a>
+<a href="?mailbox=outbox">outbox</a>
+<p class="col-md-8 fs-4">
+<ul>
+{% for note in page_obj %}
+{% if not outbox %}
+<li class = "notes" data-color = "{% cycle 'dec2cb'  'c5b9cd' 'abb1cf' %}" data-noteid = "{{note.id}}" data-mailbox='inbox'>
+{% else %}
+    <li class = "notes" data-color = "{% cycle 'dec2cb'  'c5b9cd' 'abb1cf' %}" data-noteid = "{{note.id}}" data-mailbox='outbox' >
+{% endif %}
+        <a href="#" class="btn btn-primary item"  >
+          {% if not note.read and not outbox%}
+          <p id = "{{note.id}}" style="color: red;">new!</p>
+          {% else %}
+          <p id = "{{note.id}}";></p>
+          {% endif %}
+        <h2>{{note.title}}</h2>
+        {% if outbox %}
+        <p>{{note.receiver.username}}</p>
+        {% else %}
+        <p>{{note.sender.username}}</p>
+        {% endif %}
+        </a>
+</li>
+{% endfor %}
+</ul>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+          {% if outbox %}
+            <a href="?mailbox=outbox&page={{ page_obj.previous_page_number }}"><<</a>
+          {% else %}
+            <a href="?page={{ page_obj.previous_page_number }}"><<</a>
+          {% endif %}
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+          {% if outbox %}
+          <a href="?mailbox=outbox&page={{ page_obj.next_page_number }}">>></a>
+          {% else %}
+            <a href="?page={{ page_obj.next_page_number }}">>></a>
+          {% endif %}
+        {% endif %}
+    </span>
+</div>
+        </div>
+      </div>
+
+<br>
+  </p>    
+    {% else %}
+    <ul>
+      <li class = "notes" data-color = 'c5b9cd' >
+        <a href="#" class="btn btn-primary item">
+          <h2>Please<br> Sign up!</h2>
+          <p>callie</p>
+        </a>
+      </li>
+    </ul>
+  {% endif %}
+</body>
+</html>
