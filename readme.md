@@ -1,2 +1,2 @@
-# Stickies Box
+# Stickies-Box
 
