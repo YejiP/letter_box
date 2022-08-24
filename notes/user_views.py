@@ -74,6 +74,7 @@ def add_friend(request):
         'friends': Friendship.objects.filter(
             Q(user=get_user(request)) | Q(friend=get_user(request)) & Q(status=True)),
         'friend_username': None,
+        'myself': False,
         'already_friend': False,
         'received': False,
         'pending': False,
@@ -86,8 +87,11 @@ def add_friend(request):
 
     elif request.method == 'POST':
         try:
-            friend = User.objects.get(username=request.POST['friend_username'])
-            if friend:
+            if request.POST['friend_username'] == get_user(request).username:
+                data['myself'] = True
+            elif friend:
+                friend = User.objects.get(
+                    username=request.POST['friend_username'])
                 data['noID'] = False
                 data['friend_username'] = friend.username
                 # see if i already add this person to my friend
