@@ -90,9 +90,9 @@ def add_friend(request):
                 data['noID'] = False
                 data['friend_username'] = friend.username
                 # see if i already add this person to my friend
-                if Friendship.objects.filter(Q(friend__username=request.POST['friend_username']) & Q(user=get_user(request))):
+                if Friendship.objects.filter(Q(friend__username=request.POST['friend_username']) & Q(user=get_user(request) & Q(status=True))) or Friendship.objects.filter(Q(user=request.POST['friend_username']) & Q(friend__username=get_user(request) & Q(status=True))):
                     data['already_friend'] = True
-                elif Friendship.objects.filter(Q(user=get_user(request)) & Q(friend__username=request.POST['friend_username'])):
+                elif Friendship.objects.filter(Q(friend__username=get_user(request)) & Q(user=request.POST['friend_username'])):
                     data['received'] = True
                 elif Friendship.objects.filter(Q(user=get_user(request)) & Q(friend__username=request.POST['friend_username'])):
                     data['pending'] = True

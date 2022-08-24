@@ -21,8 +21,8 @@
           {%else%}
             <a href="signup_new">create an account</a>
             <form id="loginForm"action="{% url 'login' %}" method = "post">{% csrf_token %}
-              id : <input type="text" name = "user_id">
-              pwd : <input type="password" name="user_pwd">
+              <label for="id">id : <input type="text" name = "user_id"></label>
+              <label for="pwd">pwd : <input type="password" name="user_pwd"></label>
               <button class="btn btn-primary btn-lg" type="submit">login!</button>
               {% if loginFailed %}
                 <br><span id = "login_message" style="color:red">Invalid login</span>
