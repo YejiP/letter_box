@@ -46,9 +46,9 @@ var top = (screen.height - h) / 4;
 var myNewWindow =  window.open(this.getAttribute('data-next-url'),'_blank',' width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
 } 
 
-var fn = document.getElementsByClassName('add_button')
-if (fn){
-    fn[0].addEventListener('click', friendNew)}
+var fn = document.getElementById('add_button')
+if (fn!=null){
+    fn.addEventListener('click', friendNew)}
 
 
 function openNote() {

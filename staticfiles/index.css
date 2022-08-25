@@ -7,13 +7,10 @@ body {
     background:#F8F5F1;
     color:#222;
   }
-   
   *{
     margin:5px;
     padding:5px;
   }
-   
-  
   p {
     font-size: 1rem;
     font-weight: normal;
@@ -103,7 +100,7 @@ body {
   
   }
   
-  .add_button{
+  #add_button{
     background:#ffdfba;
   }
   .friend_item:hover{
@@ -124,6 +121,5 @@ body {
     text-align: center;
     text-decoration: none;
     position: static;
-  
   }
   
