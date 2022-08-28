@@ -35,6 +35,10 @@ function send(event){
 var fc = document.getElementById('friend_container')
 if (fc!=null){
   fc.addEventListener('click',send)
+
+  var logo = document.getElementsByClassName("sticky")[0]
+  document.getElementById("login_name").style.fontSize="2em"
+
 }
 
 

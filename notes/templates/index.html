@@ -11,24 +11,30 @@
 
 </head>
 <body>
-    <div >
-        <div>
+    <div class="graph-paper">
+        <div id="head">
+        <div class="sticky">
           <h1 >Stickies</h1>
-          {% if current_user.username %}
-            user : {{current_user.username}} <a href="{% url 'logout' %}">logout</a>
-            <br>
-          {%else%}
-            <a href="signup_new">create an account</a>
-            <form id="loginForm"action="{% url 'login' %}" method = "post">{% csrf_token %}
-              <div style="display: inline-block;">id : <input type="text" name = "user_id">
-              <div style="display: inline-block;" >pwd : <input type="password" name="user_pwd"></div>
-              <button type="submit">login!</button>
+          {% if not current_user.username %}
+          <a href="signup_new">create an account</a>
+          </div>
+          <form id="loginForm"action="{% url 'login' %}" method = "post">{% csrf_token %}
+            <div class="login_section">
+             Username <input type="text" name = "user_id"><br>
+              Password <input type="password" name="user_pwd">
+            </div>
+            <button class="button-51" role="button" type="submit">login</button>
+
+            </div>
+
               {% if loginFailed %}
                 <br><span id = "login_message" style="color:red">Invalid login</span>
               {% endif %}
-            </form>
-          {% endif %}
+          </form>
 
+          {%else%}
+        <span id="login_name">{{current_user.username}}</span> <a href="{% url 'logout' %}">logout</a>
+          {% endif %}
 {% if current_user.username %}
 <br>
 <p>Send message to <input id="search" type="text" placeholder="search my friend"></p>
@@ -101,15 +107,6 @@
 
 <br>
   </p>    
-    {% else %}
-    <ul>
-      <li class = "notes" data-color = 'c5b9cd' >
-        <a href="#">
-          <h2>Please<br> Sign up!</h2>
-          <p>callie</p>
-        </a>
-      </li>
-    </ul>
   {% endif %}
 </body>
 </html>

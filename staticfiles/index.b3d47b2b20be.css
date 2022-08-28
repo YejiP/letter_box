@@ -1,0 +1,232 @@
+@import url("https://fonts.googleapis.com/css2?family=Reenie+Beanie&display=swap");
+
+body {
+    margin: 0 auto;
+    text-align: center;
+    font-family: 'Lato';
+    background:lavender;
+    color:#222;
+    
+  }
+  
+  *{
+    margin:5px; padding:5px;
+  }
+  p {
+    font-size: 1rem;
+    font-weight: normal;
+  }
+ ul,li{
+    list-style:none;
+  }
+  ul{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  ul li{
+    margin:1em;
+  }
+  h2 {
+    font-family: 'Reenie Beanie';
+    font-weight: bold;
+    font-size: 2.3rem;
+  }
+  p {
+    font-family: 'Reenie Beanie';
+    font-size: 2rem;
+  }
+  
+  ul li a{
+    transform: rotate(-6deg);
+  }
+  ul li:nth-child(even) a{
+    transform:rotate(4deg);
+    position:relative;
+    top:5px;
+  }
+  ul li:nth-child(3n) a{
+    transform:rotate(-3deg);
+    position:relative;
+    top:-5px;
+  }
+  ul li:nth-child(5n) a{
+    transform:rotate(5deg);
+    position:relative;
+    top:-10px;
+  }
+  ul li a:hover,ul li a:focus{
+    box-shadow:10px 10px 7px rgba(0,0,0,.7);
+    transform: scale(1.25);
+    position:relative;
+    z-index:5;
+  }
+  ul li a{
+    text-decoration:none;
+    color:#000;
+    background:#dec2cb;
+    display:block;
+    height:12em;
+    width:12em;
+    padding:1em;
+    box-shadow: 5px 5px 7px rgba(33,33,33,.7);
+    transition: transform .15s linear;
+  }
+  ul li:nth-child(even) a{
+    position:relative;
+    top:5px;
+    background:#c5b9cd;
+  }
+  ul li:nth-child(3n) a{
+    position:relative;
+    top:-5px;
+    background:#abb1cf;
+  }
+  
+  .friend_item{
+    border-radius: 40%;
+    border: 0ch;
+    height: 75px; 
+    width: 75px;
+    font-family: 'Reenie Beanie';
+    font-weight: bold;
+    font-size: 2rem;
+    background: #f7cac9;
+    color: azure;
+    box-shadow: 5px 5px 7px rgba(33,33,33,.4);
+    display: inline-block;
+    white-space: normal;
+  
+  }
+  
+  #add_button{
+    background:#ffdfba;
+  }
+  .friend_item:hover{
+    box-shadow:10px 10px 7px rgba(0,0,0,.4);
+    transform: scale(1.05);
+    position:relative;
+    z-index:5;
+  }
+  
+  div.scrollmenu {
+    overflow: auto;
+    white-space: nowrap;
+  }
+  
+  div.scrollmenu li {
+    display: inline-block;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    position: static;
+  }
+  
+
+    .sticky > h1{
+      font-size: 10em;
+    }
+    .sticky{
+      background-color: pink;
+      width: 40em;
+      color: white;
+      rotate: -7deg;
+      margin-top: 100px;
+      display: inline-block;
+      opacity: 0.8;
+    }
+  .sticky:before,
+  .sticky:after {
+    top: 0;
+    left: -30px;
+    content: '';
+    width: 30px;
+    height: 100%;
+    position: absolute;
+    background-color: pink;
+    background: linear-gradient(-137deg, pink 20px, transparent 0) 0 20px, linear-gradient(320deg, pink 20px, transparent 0) 20px;
+    background-position: left;
+    background-repeat: repeat-y;
+    background-size:30px 30px;
+  }
+  
+  .sticky:after {
+    left: auto;
+    right: -20px;
+    top: 0;
+    transform: scaleX(-1);
+  }
+  .sticky:hover, .sticky:focus{
+      box-shadow:10px 10px 7px rgba(0,0,0,.7);
+      transform: scale(1.25);
+      transform: rotate(7deg);
+      position:relative;
+      z-index:5;
+    }
+
+  .login_section{
+    width: fit-content;
+    margin:0 auto;
+    text-align: right;
+    background-color: #7f90f378;
+    display: inline-block;
+  }
+  .login_section > input{
+    opacity: 0.5;
+    outline: #F8F5F1;
+  }
+  
+  /* CSS */
+  .button-51 {
+    background-color: transparent;
+    border: 1px solid #8590d5f8;
+    box-sizing: border-box;
+    color: #8590d5f8;
+    line-height: 24px;
+    font-size: 16px;
+    padding: 16px 23px;
+    position: relative;
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+  
+  .button-51:hover,
+  .button-51:active {
+    outline: 0;
+  }
+  
+  .button-51:hover {
+    background-color: transparent;
+    cursor: pointer;
+  }
+  
+  .button-51:before {
+    background-color: floralwhite;
+    content: "";
+    height: calc(100% + 3px);
+    position: absolute;
+    right: -7px;
+    top: -9px;
+    transition: background-color 300ms ease-in;
+    width: 100%;
+    z-index: -1;
+  }
+  
+  .button-51:hover:before {
+    background-color: floralwhite;
+  }
+  
+  @media (min-width: 768px) {
+    .button-51 {
+      padding: 16px 32px;
+    }
+    .sticky{
+      width: 20em;
+    }
+    .sticky > h1{
+      font-size: 5em;
+    }
+  }
