@@ -129,7 +129,7 @@ body {
     }
     .sticky{
       background-color: pink;
-      opacity: 0.9;
+      opacity: 0.8;
       width: 40em;
       color: white;
       rotate: -7deg;
@@ -219,29 +219,4 @@ body {
   .button-51:hover:before {
     background-color: floralwhite;
   }
-  
-
-
-  @media (max-width: 770px) {
-    body{
-      min-width: 400px
-    }
-    .button-51 {
-      padding: 16px 32px;
-      display: block;
-      margin:  0 auto;
-      margin-top: 15px;
-    }
-    .sticky{
-      width: 80%;
-    }
-    .sticky > h1{
-      font-size: 4em;
-    }
-    .login_section{
-      padding: 2px;
-    }
-    div.scrollmenu {
-      width: 90%;
-    }
-  }
+   
