@@ -46,3 +46,4 @@
 ### Credits
 
 - Sticky notes design, thanks to [Chris Heilmann](https://code.tutsplus.com/tutorials/create-a-sticky-note-effect-in-5-easy-steps-with-css3-and-html5--net-13934)
+- Button design, thanks to https://getcssscan.com/css-buttons-examples
