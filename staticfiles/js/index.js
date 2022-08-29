@@ -36,7 +36,7 @@ var fc = document.getElementById('friend_container')
 if (fc!=null){
   fc.addEventListener('click',send)
   var topbox=document.getElementsByClassName("sticky")[0]
-  topbox.style.marginTop="1px"
+  topbox.style.marginTop="1%"
 
   var logo =topbox.getElementsByTagName("h1")[0]
   logo.textContent=document.getElementById("login_name").textContent
