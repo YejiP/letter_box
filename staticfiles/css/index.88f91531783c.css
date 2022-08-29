@@ -65,7 +65,7 @@ body {
   ul li a{
     text-decoration:none;
     color:#000;
-    background:#dec2cb;
+    background:  #ddcde6;
     display:block;
     height:12em;
     width:12em;
@@ -76,12 +76,12 @@ body {
   ul li:nth-child(even) a{
     position:relative;
     top:5px;
-    background:#c5b9cd;
+    background:  #c6e4f0;
   }
   ul li:nth-child(3n) a{
     position:relative;
     top:-5px;
-    background:#abb1cf;
+    background:#ddcde6;
   }
   
   .friend_item{

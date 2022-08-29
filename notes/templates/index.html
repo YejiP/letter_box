@@ -16,25 +16,26 @@
         <div class="sticky">
           <h1 >Stickies</h1>
           {% if not current_user.username %}
-          <a href="signup_new">create an account</a>
-          </div>
           <form id="loginForm"action="{% url 'login' %}" method = "post">{% csrf_token %}
             <div class="login_section">
-             Username <input type="text" name = "user_id"><br>
-              Password <input type="password" name="user_pwd">
+              <span>Username </span><input type="text" name = "user_id"><br>
+              <span>Password</span> <input type="password" name="user_pwd">
             </div>
             <button class="button-51" role="button" type="submit">login</button>
 
-            </div>
 
               {% if loginFailed %}
                 <br><span id = "login_message" style="color:red">Invalid login</span>
               {% endif %}
           </form>
-
+          <a href="signup_new"><span>create an account</span></a>
           {%else%}
-        <span id="login_name">{{current_user.username}}</span> <a href="{% url 'logout' %}">logout</a>
+          <a href="{% url 'logout' %}">logout</a>
+        <span id="login_name" style="display: none;">{{current_user.username}}</span> 
           {% endif %}
+        </div>
+      </div>
+
 {% if current_user.username %}
 <br>
 <p>Send message to <input id="search" type="text" placeholder="search my friend"></p>
@@ -58,9 +59,9 @@
 <ul>
 {% for note in page_obj %}
 {% if not outbox %}
-<li class = "notes" data-color = "{% cycle 'dec2cb'  'c5b9cd' 'abb1cf' %}" data-noteid = "{{note.id}}" data-mailbox='inbox'>
+<li class = "notes" data-color = "{% cycle 'ddcde6'  'c6e4f0' 'c4cfab' %}" data-noteid = "{{note.id}}" data-mailbox='inbox'>
 {% else %}
-    <li class = "notes" data-color = "{% cycle 'dec2cb'  'c5b9cd' 'abb1cf' %}" data-noteid = "{{note.id}}" data-mailbox='outbox' >
+    <li class = "notes" data-color = "{% cycle 'ddcde6'  'c6e4f0' 'c4cfab' %}" data-noteid = "{{note.id}}" data-mailbox='outbox' >
 {% endif %}
         <a href="#"  >
           {% if not note.read and not outbox%}

@@ -1,11 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Reenie+Beanie&display=swap");
 
 body {
-  background-size: 20px 20px;
+  background-size: 15px 15px;
   background-image:
-    linear-gradient(to right, rgb(214, 212, 212) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(214, 212, 212) 1px, transparent 1px);
+    linear-gradient(to right, rgba(223, 223, 223) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(223, 223, 223) 1px, transparent 1px);
     text-align: center;
+
 }
   *{
     margin:5px; padding:5px;
@@ -63,7 +64,7 @@ body {
   ul li a{
     text-decoration:none;
     color:#000;
-    background:#dec2cb;
+    background:#ddcde6;
     display:block;
     height:12em;
     width:12em;
@@ -74,12 +75,12 @@ body {
   ul li:nth-child(even) a{
     position:relative;
     top:5px;
-    background:#c5b9cd;
+    background:#c6e4f0;
   }
   ul li:nth-child(3n) a{
     position:relative;
     top:-5px;
-    background:#abb1cf;
+    background:#c4cfab;
   }
   
   .friend_item{
@@ -109,10 +110,11 @@ body {
   }
   
   div.scrollmenu {
-    overflow: auto;
+    overflow-x:scroll;
     white-space: nowrap;
+    width: 750px;
+    margin : 0 auto;
   }
-  
   div.scrollmenu li {
     display: inline-block;
     color: white;
@@ -130,9 +132,9 @@ body {
       width: 40em;
       color: white;
       rotate: -7deg;
-      margin-top: 100px;
+      margin-top: 10%;
+      padding-bottom: 2%;
       display: inline-block;
-      opacity: 0.8;
     }
   .sticky:before,
   .sticky:after {
@@ -167,7 +169,6 @@ body {
     width: fit-content;
     margin:0 auto;
     text-align: right;
-    background-color: #7f90f378;
     display: inline-block;
     padding: 10px;
   }
@@ -175,7 +176,7 @@ body {
     opacity: 0.5;
     outline: #F8F5F1;
   }
-  
+
   /* CSS */
   .button-51 {
     background-color: transparent;
@@ -218,7 +219,9 @@ body {
     background-color: floralwhite;
   }
   
-  @media (max-width: 600px) {
+
+
+  @media (max-width: 770px) {
     .button-51 {
       padding: 16px 32px;
       display: block;
@@ -233,5 +236,8 @@ body {
     }
     .login_section{
       padding: 2px;
+    }
+    div.scrollmenu {
+      width: 90%;
     }
   }

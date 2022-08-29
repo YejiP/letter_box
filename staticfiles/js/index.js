@@ -35,10 +35,14 @@ function send(event){
 var fc = document.getElementById('friend_container')
 if (fc!=null){
   fc.addEventListener('click',send)
+  var topbox=document.getElementsByClassName("sticky")[0]
+  topbox.style.marginTop="1px"
 
-  var logo = document.getElementsByClassName("sticky")[0]
-  document.getElementById("login_name").style.fontSize="2em"
-
+  var logo =topbox.getElementsByTagName("h1")[0]
+  logo.textContent=document.getElementById("login_name").textContent
+  logo.style.fontFamily='Reenie Beanie'
+  logo.style.fontSize="6em"
+  logo.style.display="inline"
 }
 
 
