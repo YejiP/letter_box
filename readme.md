@@ -36,6 +36,8 @@
 
 ### Plans for upgrades
 
+- [ ] Media query for mobile view
+- [ ] Edit account info
 - [ ] Search stickies by receiver, sender
 - [ ] End-to-end encryption
 - [ ] Model audit
