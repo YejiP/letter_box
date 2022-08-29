@@ -40,7 +40,6 @@ if (fc!=null){
 
   var logo =topbox.getElementsByTagName("h1")[0]
   logo.textContent=document.getElementById("login_name").textContent
-  logo.style.fontFamily='Reenie Beanie'
   logo.style.fontSize="6em"
   logo.style.display="inline"
 }

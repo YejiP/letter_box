@@ -59,9 +59,9 @@
 <ul>
 {% for note in page_obj %}
 {% if not outbox %}
-<li class = "notes" data-color = "{% cycle 'ddcde6'  'c6e4f0' 'c4cfab' %}" data-noteid = "{{note.id}}" data-mailbox='inbox'>
+<li class = "notes" data-color = "{% cycle 'e5deef'  'cbe4ed' 'dce6d8' %}" data-noteid = "{{note.id}}" data-mailbox='inbox'>
 {% else %}
-    <li class = "notes" data-color = "{% cycle 'ddcde6'  'c6e4f0' 'c4cfab' %}" data-noteid = "{{note.id}}" data-mailbox='outbox' >
+    <li class = "notes" data-color = "{% cycle 'e5deef'  'cbe4ed' 'dce6d8' %}" data-noteid = "{{note.id}}" data-mailbox='outbox' >
 {% endif %}
         <a href="#"  >
           {% if not note.read and not outbox%}
