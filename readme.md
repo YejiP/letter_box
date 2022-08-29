@@ -39,6 +39,7 @@
 - [ ] Media query for mobile view
 - [ ] Edit account info
 - [ ] Search stickies by receiver, sender
+- [ ] Add friends by friend group code
 - [ ] End-to-end encryption
 - [ ] Model audit
 
