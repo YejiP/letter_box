@@ -2,6 +2,7 @@
 
 body {
   background-size: 15px 15px;
+  font-family: serif;
   background-image:
     linear-gradient(to right, rgba(223, 223, 223) 1px, transparent 1px),
     linear-gradient(to bottom, rgb(223, 223, 223) 1px, transparent 1px);
@@ -235,7 +236,7 @@ body {
       width: 80%;
     }
     .sticky > h1{
-      font-size: None;
+      font-size: 4em;
     }
     .login_section{
       padding: 2px;
