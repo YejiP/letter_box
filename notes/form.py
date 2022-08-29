@@ -8,3 +8,12 @@ class SignUpForm(forms.Form):
         attrs={'class': 'form-control', 'type': 'password', 'placeholder': 'Enter Password'}))
     conPassword = forms.CharField(label="Confirm Password", max_length=20, widget=forms.TextInput(
         attrs={'class': 'form-control', 'type': 'password', 'placeholder': 'Confirm Password'}))
+
+
+class UpdateForm(forms.Form):
+    prev_pwd = forms.CharField(label="Current Password", max_length=20, widget=forms.TextInput(
+        attrs={'class': 'form-control', 'type': 'password', 'placeholder': 'Type your current password'}))
+    new_pwd = forms.CharField(label="New Password", max_length=20, widget=forms.TextInput(
+        attrs={'class': 'form-control', 'type': 'password', 'placeholder': 'Enter New Password'}))
+    confirm_pwd = forms.CharField(label="Confirm Password", max_length=20, widget=forms.TextInput(
+        attrs={'class': 'form-control', 'type': 'password', 'placeholder': 'Confirm Password'}))

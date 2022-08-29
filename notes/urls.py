@@ -18,6 +18,9 @@ urlpatterns = [
 
     path('signup/', user_views.signup, name='signup'),
     path('signup_new/', user_views.signup_new, name='signup_new'),
+    
+    path('my_account_view/', user_views.my_account_view, name='my_account_view'),
+    path('my_account_update/', user_views.my_account_update, name='my_account_update'),
 
     path('login/', user_views.login_view, name='login'),
     path('logout/', user_views.logout_view, name='logout'),

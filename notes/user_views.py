@@ -1,11 +1,12 @@
 from operator import truediv
 from django.shortcuts import render
 from django.shortcuts import redirect
+
 from .models import Notes, User
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import get_user, logout
-from .form import SignUpForm
+from .form import SignUpForm, UpdateForm
 from .models import Friendship
 from django.db.models import Q
 from datetime import datetime, timezone
@@ -63,6 +64,43 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('index')
+
+def my_account_view(request):
+    data ={
+    'username':get_user(request).username,
+    'error_message' :None,
+    'update_form': UpdateForm()
+    }
+    return render(request,"update_account.html", data)
+
+
+def my_account_update(request):
+    data={
+        'username':get_user(request).username,
+        'error_message' : None,
+        'success':False,
+        'update_form': UpdateForm()
+
+    }
+    updateForm =UpdateForm(request.POST)
+    if updateForm.is_valid():
+        current_pwd = request.POST['prev_pwd']
+        user = User.objects.get(username=get_user(request).username)
+        
+        if user.check_password(current_pwd):
+            #confirm
+            if request.POST['new_pwd'] ==request.POST['confirm_pwd']:
+                #set pwd
+                user.set_password(request.POST['new_pwd'])
+                user.save()
+                data['success']=True
+            else:
+                data['error_message']="New Password does not match."
+        else:
+            data['error_message']="Current password does not match."
+    return render(request,"update_account.html", data)
+
+    
 
 
 def add_friend(request):

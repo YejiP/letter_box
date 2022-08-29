@@ -1,4 +1,5 @@
 
+from distutils.debug import DEBUG
 import os
 from decouple import config
 import environ
@@ -16,7 +17,7 @@ SECRET_KEY = os.environ['secret_key']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
-
+# DEBUG=True
 ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com', ]
 
 

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Update Account</title>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+      crossorigin="anonymous"
+    ></script>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/my_account.css' %}" />
+  </head>
+  <body>
+    <br />
+    Update my password
+    <form
+      name="updateform"
+      action="{% url 'my_account_update' %}"
+      method="post"
+    >
+      {% csrf_token %} {% if error_message %}
+      <span style="color: red">{{error_message}}</span>
+      {% endif %}
+      <div class="form-group">
+        Hi, {{username}}
+        <br />
+        {{update_form.prev_pwd}} <br />
+        {{update_form.new_pwd}} {{update_form.confirm_pwd}}
+        <br />
+        <button class="btn btn-outline-light">submit</button>
+        {% if success %}
+        <script>
+          alert("Password is updated!, Please login again");
+          window.location.href = "{% url 'logout' %}";
+        </script>
+        {% endif %}
+      </div>
+    </form>
+  </body>
+</html>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=0.3">
-    <title>note</title>
+    <title>Stickies</title>
 {% load static%}
 <script src="{% static 'js/index.js' %}"></script>
 <link rel="stylesheet" href="{% static 'css/index.css' %}" />
@@ -22,15 +22,14 @@
               <span>Password</span> <input type="password" name="user_pwd">
             </div>
             <button class="button-51" role="button" type="submit">login</button>
-
-
               {% if loginFailed %}
                 <br><span id = "login_message" style="color:red">Invalid login</span>
               {% endif %}
           </form>
           <a href="signup_new"><span>create an account</span></a>
           {%else%}
-          <a href="{% url 'logout' %}">logout</a>
+          <a href="{% url 'my_account_view' %}">My account</a>
+          <a href="{% url 'logout' %}">Logout</a>
         <span id="login_name" style="display: none;">{{current_user.username}}</span> 
           {% endif %}
         </div>
